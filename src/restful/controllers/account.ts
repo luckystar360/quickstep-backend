@@ -7,6 +7,41 @@ import { comparePwd, generateToken, hashPwd } from "../../utils/helpers";
 import Respond from "../../utils/respond";
 
 export default class UserController {
+  // nhatdn
+  // get user with phoneId
+  static getUser = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { phoneId } = req.params; 
+      const user = await Account.findOne({
+        phoneId: phoneId,
+      });
+      return respond.success(200, {
+        message: user !=null ? "User retrieved successfully" : "User does not exist", 
+        data: user,
+      });
+    } catch (error) {
+      return respond.error(error);
+    }
+  };
+
+  static createUser = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const account = await Account.create({ ...req.body});
+      return respond.success(201, {
+        message: "Account created successfully!",
+        data: account,
+      });
+    } catch (error: any) {
+      console.log(error);
+      return respond.error(error);
+    }
+  };
+
+  //end nhatdn
+
+
   // Getting all users
   static getAllUsers = async (req: Request, res: Response) => {
     const respond = new Respond(res);
@@ -29,7 +64,7 @@ export default class UserController {
     const respond = new Respond(res);
     try {
       const password = await hashPwd(req.body.password);
-      const account = await Account.create({ ...req.body, password });
+      const account = await Account.create({ ...req.body, password, role: 'member' });
       return respond.success(201, {
         message: "Account created successfully, verify email",
         data: account,
@@ -102,7 +137,7 @@ export default class UserController {
         });
       }
 
-      const validPwd = await comparePwd(password, user.password);
+      const validPwd = await comparePwd(password, user.password!);
       if (!validPwd) {
         return respond.success(401, {
           message: "Invalid password",

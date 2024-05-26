@@ -12,6 +12,7 @@ import {
 } from "./utils/users";
 import User from "./@types/user";
 import { connectDB } from "./database/config";
+import { Message } from "./database/models/message";
 
 dotenv.config();
 
@@ -32,69 +33,65 @@ const io = new Server(server, {
 
 // Running when user connects
 io.on("connection", (socket: Socket) => {
-  socket.on("joinRoom", (data) => {
-    const user: User = userJoin({
-      id: data.user,
-      username: data.username,
-      room: data.room,
-      img: data.profileUrl,
-      joinedAt: new Date(),
-    });
+  console.log('connection');
+  socket.on("joinRoomMessage", (data) => {
+    const roomId = data.roomId;
+    const userId = data.userId;
+    console.log(`roomId: ${roomId} userId: ${userId}`);
+    socket.join(roomId);
 
-    socket.join(user.room);
-
-    //Welcome user
-    socket.emit("connected", "You're connected to the movement");
+    //Welcome to user
+    socket.emit("connected", "You're connected to the RoomMessage");
     socket.broadcast
-      .to(user.room)
-      .emit("connected", `${user.username} has joined the movement`);
+      .to(roomId)
+      .emit("connected", `${userId} has joined the room`);
 
-    socket.on("locationChanged", (data) => {
-      const { user, lat, long } = data;
-      const userA = getCurrentUser(user);
+    // socket.on("locationChanged", (data) => {
+    //   const { user, lat, long } = data;
+    //   const userA = getCurrentUser(user);
 
-      if (!userA) return;
+    //   if (!userA) return;
 
-      io.to(userA.room).emit("locationChanged", {
-        user: userA.id,
-        lat,
-        long,
-      });
-    });
+    //   io.to(userA.room).emit("locationChanged", {
+    //     user: userA.id,
+    //     lat,
+    //     long,
+    //   });
+    // });
     //Chatting message
-    socket.on("chatMessage", (data) => {
-      const { userId, message } = data;
-
-      const userA = getCurrentUser(userId);
-
-      if (!userA) return;
-
-      io.to(userA.room).emit("chatMessage", {
-        userId,
-        message,
-        sentAt: new Date(),
-      });
+    socket.on("addMessage", async (data) => {
+      const { message, fromId, toId, roomId } = data;
+      console.log("data:%o", data);
+      try {
+        const mess = await Message.create({ message, fromId, toId, roomId });
+        if(mess != null)
+        {
+          io.to(roomId).emit("newMessage", mess);
+        }
+      } catch (error: any) {
+        console.log(error); 
+      }
     });
     //Send users and room info
-    io.to(user.room).emit("roomUsers", {
-      room: user.room,
-      users: getRoomUsers(user.room),
-    });
+    // io.to(user.room).emit("roomUsers", {
+    //   room: user.room,
+    //   users: getRoomUsers(user.room),
+    // });
 
     //Runs when clients disconnect
-    socket.on("disconnect", () => {
-      const leavingUser = userLeave(user.id);
-      if (!leavingUser) return;
-      io.to(leavingUser.room).emit(
-        "connected",
-        `${leavingUser.username} has left the party`
-      );
-      //Send users and room info
-      io.to(user.room).emit("roomUsers", {
-        room: user.room,
-        users: getRoomUsers(user.room),
-      });
-    });
+    // socket.on("disconnect", () => {
+    //   const leavingUser = userLeave(user.id);
+    //   if (!leavingUser) return;
+    //   io.to(leavingUser.room).emit(
+    //     "connected",
+    //     `${leavingUser.username} has left the party`
+    //   );
+    //   //Send users and room info
+    //   io.to(user.room).emit("roomUsers", {
+    //     room: user.room,
+    //     users: getRoomUsers(user.room),
+    //   });
+    // });
   });
 });
 

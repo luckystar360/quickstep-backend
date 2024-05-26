@@ -111,10 +111,10 @@ export const accountDefinitions = {
   create: {
     type: "object",
     properties: {
-      fullName: {
+      phoneId: {
         type: "string",
         required: true,
-        default: "Aime Ndayambaje",
+        default: "123456abcd",
       },
       email: {
         type: "string",

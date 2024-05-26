@@ -4,18 +4,37 @@ import { verifyToken } from "../../utils/helpers";
 import Respond from "../../utils/respond";
 
 export default class AuthMiddleWare {
-  //check if the user already has account
-  static async isAccountExist(req: Request, res: Response, next: NextFunction) {
+  //nhatdn
+  static async isPhoneIdExist(req: Request, res: Response, next: NextFunction) {
     const respond = new Respond(res);
     try {
-      const { email } = req.body;
-      const exist = await Account.findOne({ email });
-      if (exist) {
+      const { phoneId } = req.body; 
+      const existPhoneId = await Account.findOne({ phoneId }); 
+      if (existPhoneId) {
+        return respond.success(409, {
+          message: "PhoneId already exists",
+          data: undefined,
+        });
+      } 
+      next();
+    } catch (error) {
+      return respond.error(error);
+    }
+  }
+  //end nhatdn
+
+  //check if the user already has account
+  static async isAccountExist(req: Request, res: Response, next: NextFunction) {
+    const respond = new Respond(res); 
+    try {
+      const { email, phoneId } = req.body;
+      const existEmail = await Account.findOne({ email }); 
+      if (existEmail) {
         return respond.success(409, {
           message: "Account already exists",
           data: undefined,
         });
-      }
+      } 
       next();
     } catch (error) {
       return respond.error(error);
@@ -49,27 +68,27 @@ export default class AuthMiddleWare {
   }
 
   //Check if the user is admin
-  static async isAdmin(req: Request, res: Response, next: NextFunction) {
-    const respond = new Respond(res);
-    try {
-      const id: string = res.locals.accountId;
-      if (!id) throw new Error("User not logged in");
-      const exist = await Account.findById(id);
-      if (!exist) {
-        return respond.success(404, {
-          message: "Account not exist",
-          data: undefined,
-        });
-      }
-      if (exist.role !== "admin") {
-        return respond.success(401, {
-          message: "Login as Admin to perform this action",
-          data: undefined,
-        });
-      }
-      next();
-    } catch (error) {
-      return respond.error(error);
-    }
-  }
+  // static async isAdmin(req: Request, res: Response, next: NextFunction) {
+  //   const respond = new Respond(res);
+  //   try {
+  //     const id: string = res.locals.accountId;
+  //     if (!id) throw new Error("User not logged in");
+  //     const exist = await Account.findById(id);
+  //     if (!exist) {
+  //       return respond.success(404, {
+  //         message: "Account not exist",
+  //         data: undefined,
+  //       });
+  //     }
+  //     if (exist.role !== "admin") {
+  //       return respond.success(401, {
+  //         message: "Login as Admin to perform this action",
+  //         data: undefined,
+  //       });
+  //     }
+  //     next();
+  //   } catch (error) {
+  //     return respond.error(error);
+  //   }
+  // }
 }

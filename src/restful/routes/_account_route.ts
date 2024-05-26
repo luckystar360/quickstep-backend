@@ -5,9 +5,25 @@ import AuthMiddleWare from "../middlewares/_auth_middleware";
 
 const accountRoutes = express.Router();
 
+// nhatdn
+accountRoutes.get(
+  "/get-user/:phoneId",
+  // AuthMiddleWare.isLoggedIn,
+  // AuthMiddleWare.isAdmin,
+  UserController.getUser
+);
+accountRoutes.post(
+  "/create-user",
+  AuthValidate.createUser,
+  AuthMiddleWare.isPhoneIdExist,
+  UserController.createUser
+);
+
+//nhatdn end
+
 accountRoutes.get(
   "/",
-  AuthMiddleWare.isLoggedIn,
+  // AuthMiddleWare.isLoggedIn,
   // AuthMiddleWare.isAdmin,
   UserController.getAllUsers
 );

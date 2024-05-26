@@ -2,15 +2,28 @@ import mongoose from "mongoose";
 import OTPService from "../../services/otp";
 
 const accountSchema = new mongoose.Schema({
-  fullName: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  fullName: { type: String},
+  phoneId: { type: String, unique: true },
+  email: { type: String},
+  password: { type: String},
   verified: { type: Boolean, required: true, default: false },
   role: {
     type: String,
     required: true,
-    enum: ["user", "admin"],
-    default: "user",
+    enum: ["guest", "member"],
+    default: "guest",
+  },
+  type: {
+    type: String,
+    required: true,
+    enum: ["tracker", "trackee"],
+    default: "tracker",
+  },
+  trackerIdList:{
+    type: [String], default: undefined 
+  },
+  trackeeIdList:{
+    type: [String], default: undefined 
   },
   createdAt: {
     type: Date,
