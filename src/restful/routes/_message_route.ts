@@ -25,6 +25,13 @@ messageRoutes.post(
     // MessageValidate.addMessage,
     MessageController.createRoom
 );
+
+messageRoutes.get(
+    "/get-rooms/:userId",
+    // AuthMiddleWare.isLoggedIn,
+    // AuthMiddleWare.isAdmin,
+    MessageController.getRooms
+);
 //nhatdn end
 
 
