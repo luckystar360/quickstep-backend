@@ -12,7 +12,7 @@ import {
 } from "./utils/users";
 import User from "./@types/user";
 import { connectDB } from "./database/config";
-import { Message } from "./database/models/message";
+import { Message, MessageRoom } from "./database/models/message";
 
 dotenv.config();
 
@@ -34,6 +34,21 @@ const io = new Server(server, {
 // Running when user connects
 io.on("connection", (socket: Socket) => {
   console.log('connection');
+
+  socket.on("useMessage", (data)=>{
+    const userId = data.userId;
+    console.log(userId);
+    socket.join(userId);
+    socket.emit("messageConnected", "You're connected to the RoomMessage");
+  })
+
+  socket.on("createRoomMessage",async (data) => {
+    const name = data.name;
+    const usersId = data.usersId;
+    const room = await MessageRoom.create({name, usersId});
+    socket.broadcast.to(usersId).emit("roomMessageCreated", room);
+  });
+
   socket.on("joinRoomMessage", (data) => {
     const roomId = data.roomId;
     const userId = data.userId;
@@ -64,12 +79,11 @@ io.on("connection", (socket: Socket) => {
       console.log("data:%o", data);
       try {
         const mess = await Message.create({ message, fromId, toId, roomId });
-        if(mess != null)
-        {
+        if (mess != null) {
           io.to(roomId).emit("newMessage", mess);
         }
       } catch (error: any) {
-        console.log(error); 
+        console.log(error);
       }
     });
     //Send users and room info
