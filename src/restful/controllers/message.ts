@@ -10,12 +10,28 @@ import { Message, MessageRoom } from "../../database/models/message";
 export default class MessageController {
   // nhatdn
   // get messages with userId
+  // static getMessage = async (req: Request, res: Response) => {
+  //   const respond = new Respond(res);
+  //   try {
+  //     const { userId } = req.params;
+  //     const messages = await Message.find({
+  //       $or: [{ fromId: userId }],
+  //     }).sort({ createdAt: -1 });
+  //     return respond.success(200, {
+  //       message: "Messages retrieved successfully",
+  //       data: messages,
+  //     });
+  //   } catch (error) {
+  //     return respond.error(error);
+  //   }
+  // };
+
   static getMessage = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const { userId } = req.params;
+      const { roomId } = req.params;
       const messages = await Message.find({
-        $or: [{ fromId: userId }, { toId: userId }],
+        roomId,
       }).sort({ createdAt: -1 });
       return respond.success(200, {
         message: "Messages retrieved successfully",
@@ -61,6 +77,14 @@ export default class MessageController {
       const rooms = await MessageRoom.find({
         usersId: { $in: [userId] },
       }).sort({ updateddAt: -1 });
+      for (const room of rooms) {
+        if (room.usersId.length == 2) {
+          const user2Id = room.usersId.find((id) => id != userId);
+          const user2 = await Account.findById(user2Id);
+          room.name = user2?.fullName ?? user2Id;
+        }
+      }
+
       return respond.success(200, {
         message: "Rooms retrieved successfully!",
         data: rooms,

@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const messageSchema = new mongoose.Schema({
     message: { type: String, required: true },
     fromId: { type: String, required: true },
-    toId: { type: String, required: true },
     roomId: { type: String, required: true},
     createdAt: {
         type: Date,

@@ -8,7 +8,6 @@ export default class MessageValidate {
     const schema = Joi.object().keys({
         message: Joi.string().required().min(0).max(1000),
         fromId: Joi.string().required().id(),
-        toId: Joi.string().required().id(),
         roomId: Joi.string().required().id(),
     });
     const { error } = schema.validate(req.body);

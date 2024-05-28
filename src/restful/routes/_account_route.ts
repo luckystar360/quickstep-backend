@@ -18,6 +18,12 @@ accountRoutes.post(
   AuthMiddleWare.isPhoneIdExist,
   UserController.createUser
 );
+accountRoutes.get(
+  "/get-users/:ids",
+  // AuthMiddleWare.isLoggedIn,
+  // AuthMiddleWare.isAdmin,
+  UserController.getUsers
+);
 
 //nhatdn end
 

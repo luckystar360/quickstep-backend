@@ -41,6 +41,21 @@ export default class UserController {
 
   //end nhatdn
 
+  static getUsers = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { ids } = req.params;
+      var array = ids.split(",");
+      const users = await Account.find({_id: { $in: array } });
+      return respond.success(200, {
+        message: "Users retrieved successfully",
+        count: users.length,
+        data: users,
+      });
+    } catch (error) {
+      return respond.error(error);
+    }
+  };
 
   // Getting all users
   static getAllUsers = async (req: Request, res: Response) => {

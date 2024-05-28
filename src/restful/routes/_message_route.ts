@@ -7,7 +7,7 @@ const messageRoutes = express.Router();
 
 // nhatdn
 messageRoutes.get(
-    "/get-message/:userId",
+    "/get-message/:roomId",
     // AuthMiddleWare.isLoggedIn,
     // AuthMiddleWare.isAdmin,
     MessageController.getMessage

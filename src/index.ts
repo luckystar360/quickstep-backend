@@ -13,6 +13,7 @@ import {
 import User from "./@types/user";
 import { connectDB } from "./database/config";
 import { Message, MessageRoom } from "./database/models/message";
+import Account from "./database/models/account";
 
 dotenv.config();
 
@@ -43,44 +44,38 @@ io.on("connection", (socket: Socket) => {
   })
 
   socket.on("createRoomMessage",async (data) => {
+    const userId = data.userId;
     const name = data.name;
     const usersId = data.usersId;
     const room = await MessageRoom.create({name, usersId});
+    if(room.usersId.length == 2) {
+      const user2Id = room.usersId.find((id)=> userId != id);
+      const user2 = await Account.findById(user2Id);
+      room.name = user2?.fullName ?? user2Id;
+    }
     socket.broadcast.to(usersId).emit("roomMessageCreated", room);
   });
 
-  socket.on("joinRoomMessage", (data) => {
-    const roomId = data.roomId;
-    const userId = data.userId;
-    console.log(`roomId: ${roomId} userId: ${userId}`);
-    socket.join(roomId);
+  // socket.on("joinRoomMessage", (data) => {
+  //   const roomId = data.roomId;
+  //   const userId = data.userId;
+  //   console.log(`roomId: ${roomId} userId: ${userId}`);
+  //   socket.join(roomId);
 
-    //Welcome to user
-    socket.emit("connected", "You're connected to the RoomMessage");
-    socket.broadcast
-      .to(roomId)
-      .emit("connected", `${userId} has joined the room`);
-
-    // socket.on("locationChanged", (data) => {
-    //   const { user, lat, long } = data;
-    //   const userA = getCurrentUser(user);
-
-    //   if (!userA) return;
-
-    //   io.to(userA.room).emit("locationChanged", {
-    //     user: userA.id,
-    //     lat,
-    //     long,
-    //   });
-    // });
+  //   //Welcome to user
+  //   socket.emit("connected", "You're connected to the RoomMessage");
+  //   socket.broadcast
+  //     .to(roomId)
+  //     .emit("connected", `${userId} has joined the room`);
+ 
     //Chatting message
     socket.on("addMessage", async (data) => {
-      const { message, fromId, toId, roomId } = data;
-      console.log("data:%o", data);
+      const { message, fromId, roomId } = data; 
       try {
-        const mess = await Message.create({ message, fromId, toId, roomId });
+        const room = await MessageRoom.findById(roomId);
+        const mess = await Message.create({ message, fromId, roomId });
         if (mess != null) {
-          io.to(roomId).emit("newMessage", mess);
+          io.to(room?.usersId ?? []).emit("newMessage", mess);
         }
       } catch (error: any) {
         console.log(error);
@@ -106,7 +101,7 @@ io.on("connection", (socket: Socket) => {
     //     users: getRoomUsers(user.room),
     //   });
     // });
-  });
+  // });
 });
 
 // Default home route
