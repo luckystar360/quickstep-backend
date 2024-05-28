@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { message, messageDefinitions } from "./restful/message";
 import { account, accountDefinitions } from "./restful/account";
 import { movement, movementDefinitions } from "./restful/movements";
 import { notification } from "./restful/notifications";
@@ -6,12 +7,19 @@ import { profile, profileDefinitions } from "./restful/profile";
 
 dotenv.config();
 
-const paths = { ...account, ...profile, ...movement, ...notification };
+const paths = { 
+  ...account, 
+  ...message, 
+  // ...profile, 
+  // ...movement, 
+  // ...notification 
+};
 
 const definitions = {
   ...accountDefinitions,
-  ...profileDefinitions,
-  ...movementDefinitions,
+  ...messageDefinitions,
+  // ...profileDefinitions,
+  // ...movementDefinitions,
 };
 
 const host =
