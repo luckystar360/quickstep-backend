@@ -45,7 +45,12 @@ export default class MessageController {
   static addMessage = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
+      const { roomId } = req.body;
+      const room = await MessageRoom.findById(roomId);
       const message = await Message.create({ ...req.body });
+      if(message != null) {
+        res.locals.io.to(room?.usersId ?? []).emit("newMessage", message);
+      }
       return respond.success(201, {
         message: "add message successfully!",
         data: message,
