@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
 import OTPService from "../../services/otp";
+import { nanoid } from 'nanoid';
 
-const shortid = require('shortid');
 const accountSchema = new mongoose.Schema({
   pairId: {
     type: String,
-    default: shortid.generate
+    default: nanoid(5),
+    unique: true,
   },
   fullName: { type: String },
   phoneId: { type: String, unique: true },
