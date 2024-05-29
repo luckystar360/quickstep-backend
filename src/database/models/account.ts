@@ -1,15 +1,11 @@
 import mongoose from "mongoose";
 import OTPService from "../../services/otp";
 
-const generateUniqueId = require("generate-unique-id");
-
+const shortid = require('shortid');
 const accountSchema = new mongoose.Schema({
   pairId: {
     type: String,
-    default: generateUniqueId({
-      length: 5,
-      useLetters: true,
-    }),
+    default: shortid.generate
   },
   fullName: { type: String },
   phoneId: { type: String, unique: true },
