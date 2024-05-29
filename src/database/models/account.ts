@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import OTPService from "../../services/otp";
-import { customAlphabet } from 'nanoid';
+import { customAlphabet } from "nanoid";
 
 const accountSchema = new mongoose.Schema({
   pairId: {
     type: String,
-    default:()=>customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 5)(),
+    default: () => customAlphabet("1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ", 5)(),
     unique: true,
   },
   fullName: { type: String },
@@ -26,11 +26,13 @@ const accountSchema = new mongoose.Schema({
     default: "tracker",
   },
   trackerIdList: {
-    type: [{ id: String, nickName: String }],
+    type: [
+      { id: String, nickName: String, connectedTime: Date }
+    ],
     default: undefined,
   },
   trackeeIdList: {
-    type: [{ id: String, nickName: String }],
+    type: [{ id: String, nickName: String, connectedTime: Date }],
     default: undefined,
   },
   createdAt: {

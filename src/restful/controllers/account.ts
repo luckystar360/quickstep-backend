@@ -82,7 +82,7 @@ export default class UserController {
       if (trackee.trackerIdList == null) trackee.trackerIdList = [];
 
       if (trackee.trackerIdList?.find((item) => item.id == tracker.id) == null)
-        trackee.trackerIdList.push({ id: tracker.id, nickName: "tracker" });
+        trackee.trackerIdList.push({ id: tracker.id, nickName: "tracker", connectedTime: new Date()});
       else
         return respond.success(409, {
           message: "The tracker already exists",
@@ -90,7 +90,7 @@ export default class UserController {
         });
 
       if (tracker.trackeeIdList == null) tracker.trackeeIdList = [];
-      tracker.trackeeIdList.push({ id: trackee.id, nickName: "trackee" });
+      tracker.trackeeIdList.push({ id: trackee.id, nickName: "trackee", connectedTime: new Date() });
 
       await Account.findByIdAndUpdate(trackee.id, trackee);
       await Account.findByIdAndUpdate(tracker.id, tracker);
