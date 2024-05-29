@@ -83,7 +83,7 @@ export default class MessageController {
         if (room.usersId.length == 2) {
           const user2Id = room.usersId.find((id) => id != userId);
           const user2 = await Account.findById(user2Id);
-          room.name = user2?.fullName ?? user2Id;
+          room.name = user2Id;
         }
       }
 
