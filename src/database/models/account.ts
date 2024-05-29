@@ -5,7 +5,7 @@ import { nanoid } from 'nanoid';
 const accountSchema = new mongoose.Schema({
   pairId: {
     type: String,
-    default: nanoid(5),
+    default:()=>nanoid(5),
     unique: true,
   },
   fullName: { type: String },
