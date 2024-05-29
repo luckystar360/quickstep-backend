@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import OTPService from "../../services/otp";
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 
 const accountSchema = new mongoose.Schema({
   pairId: {
     type: String,
-    default:()=>nanoid(5),
+    default:()=>customAlphabet('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ', 5)(),
     unique: true,
   },
   fullName: { type: String },
