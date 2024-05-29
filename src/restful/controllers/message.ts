@@ -48,7 +48,7 @@ export default class MessageController {
       const { roomId } = req.body;
       const room = await MessageRoom.findById(roomId);
       const message = await Message.create({ ...req.body });
-      if(message != null) {
+      if (message != null) {
         res.locals.io.to(room?.usersId ?? []).emit("newMessage", message);
       }
       return respond.success(201, {
@@ -68,12 +68,12 @@ export default class MessageController {
       const existRooms = await MessageRoom.find({
         usersId: { $in: usersId },
       });
-      if(existRooms.length > 0) {
-        return respond.success(201, {
+      if (existRooms.length > 0) {
+        return respond.success(409, {
           message: "Room already exists!",
           data: existRooms[0],
         });
-      } 
+      }
       const room = await MessageRoom.create({ ...req.body });
       res.locals.io.to(usersId).emit("roomMessageCreated", room);
       return respond.success(201, {
