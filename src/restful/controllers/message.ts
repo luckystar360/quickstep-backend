@@ -79,13 +79,13 @@ export default class MessageController {
       const rooms = await MessageRoom.find({
         usersId: { $in: [userId] },
       }).sort({ updateddAt: -1 });
-      for (const room of rooms) {
-        if (room.usersId.length == 2) {
-          const user2Id = room.usersId.find((id) => id != userId);
-          const user2 = await Account.findById(user2Id);
-          room.name = user2Id;
-        }
-      }
+      // for (const room of rooms) {
+      //   if (room.usersId.length == 2) {
+      //     const user2Id = room.usersId.find((id) => id != userId);
+      //     const user2 = await Account.findById(user2Id);
+      //     room.name = user2Id;
+      //   }
+      // }
 
       return respond.success(200, {
         message: "Rooms retrieved successfully!",
