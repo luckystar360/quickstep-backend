@@ -61,7 +61,7 @@ export default class MessageController {
     try {
       const { usersId } = req.body;
       const room = await MessageRoom.create({ ...req.body });
-      res.locals.io.broadcast.to(usersId).emit("roomMessageCreated", room);
+      res.locals.io.to(usersId).emit("roomMessageCreated", room);
       return respond.success(201, {
         message: "create room successfully!",
         data: room,
