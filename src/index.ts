@@ -81,6 +81,15 @@ io.on("connection", (socket: Socket) => {
         console.log(error);
       }
     });
+
+    socket.on("waitToPair", async (data) => {
+      const { trackerCode } = data; 
+      try {
+        socket.join(trackerCode);
+      } catch (error: any) {
+        console.log(error);
+      }
+    });
     //Send users and room info
     // io.to(user.room).emit("roomUsers", {
     //   room: user.room,
@@ -112,6 +121,10 @@ app.get("/", (req, res) => {
 });
 
 // Restful API routes
+app.use("/api/v1/", (req, res, next) => {
+  res.locals.io = io;
+  next();
+});
 app.use("/api/v1/", routes);
 
 app.get("*", (req, res) => {

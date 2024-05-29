@@ -24,7 +24,10 @@ accountRoutes.get(
   // AuthMiddleWare.isAdmin,
   UserController.getUsers
 );
-
+accountRoutes.post(
+  "/connect-to-tracker", 
+  UserController.connectToTracker
+);
 //nhatdn end
 
 accountRoutes.get(

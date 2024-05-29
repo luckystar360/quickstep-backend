@@ -1,11 +1,20 @@
 import mongoose from "mongoose";
 import OTPService from "../../services/otp";
 
+const generateUniqueId = require("generate-unique-id");
+
 const accountSchema = new mongoose.Schema({
-  fullName: { type: String},
+  pairId: {
+    type: String,
+    default: generateUniqueId({
+      length: 5,
+      useLetters: true,
+    }),
+  },
+  fullName: { type: String },
   phoneId: { type: String, unique: true },
-  email: { type: String},
-  password: { type: String},
+  email: { type: String },
+  password: { type: String },
   verified: { type: Boolean, required: true, default: false },
   role: {
     type: String,
@@ -19,11 +28,13 @@ const accountSchema = new mongoose.Schema({
     enum: ["tracker", "trackee"],
     default: "tracker",
   },
-  trackerIdList:{
-    type: [String], default: undefined 
+  trackerIdList: {
+    type: [{ id: String, nickName: String }],
+    default: undefined,
   },
-  trackeeIdList:{
-    type: [String], default: undefined 
+  trackeeIdList: {
+    type: [{ id: String, nickName: String }],
+    default: undefined,
   },
   createdAt: {
     type: Date,

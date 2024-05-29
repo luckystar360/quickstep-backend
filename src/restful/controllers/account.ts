@@ -12,12 +12,13 @@ export default class UserController {
   static getUser = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const { phoneId } = req.params; 
+      const { phoneId } = req.params;
       const user = await Account.findOne({
         phoneId: phoneId,
       });
       return respond.success(200, {
-        message: user !=null ? "User retrieved successfully" : "User does not exist", 
+        message:
+          user != null ? "User retrieved successfully" : "User does not exist",
         data: user,
       });
     } catch (error) {
@@ -28,7 +29,7 @@ export default class UserController {
   static createUser = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const account = await Account.create({ ...req.body});
+      const account = await Account.create({ ...req.body });
       return respond.success(201, {
         message: "Account created successfully!",
         data: account,
@@ -39,14 +40,12 @@ export default class UserController {
     }
   };
 
-  //end nhatdn
-
   static getUsers = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
       const { ids } = req.params;
       var array = ids.split(",");
-      const users = await Account.find({_id: { $in: array } });
+      const users = await Account.find({ _id: { $in: array } });
       return respond.success(200, {
         message: "Users retrieved successfully",
         count: users.length,
@@ -56,6 +55,57 @@ export default class UserController {
       return respond.error(error);
     }
   };
+
+  static connectToTracker = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { trackeeId, trackerCode } = req.body;
+
+      const trackee = await Account.findOne({
+        _id: trackeeId,
+        type: "trackee",
+      });
+      const tracker = await Account.findOne({
+        pairId: trackerCode,
+        type: "tracker",
+      });
+      if (trackee == null)
+        return respond.success(404, {
+          message: "Trackee does not exist",
+          data: trackeeId,
+        });
+      if (tracker == null)
+        return respond.success(404, {
+          message: "The Code does not exist",
+          data: trackerCode,
+        });
+      if (trackee.trackerIdList == null) trackee.trackerIdList = [];
+
+      if (trackee.trackerIdList?.find((item) => item.id == tracker.id) == null)
+        trackee.trackerIdList.push({ id: tracker.id, nickName: "tracker" });
+      else
+        return respond.success(409, {
+          message: "The tracker already exists",
+          data: tracker,
+        });
+
+      if (tracker.trackeeIdList == null) tracker.trackeeIdList = [];
+      tracker.trackeeIdList.push({ id: trackee.id, nickName: "trackee" });
+
+      await Account.findByIdAndUpdate(trackee.id, trackee);
+      await Account.findByIdAndUpdate(tracker.id, tracker);
+
+      res.locals.io?.to(trackerCode).emit("newEvent", trackee);
+
+      return respond.success(200, {
+        message: "Users have been paired",
+        data: trackee,
+      });
+    } catch (error) {
+      return respond.error(error);
+    }
+  };
+  //end nhatdn
 
   // Getting all users
   static getAllUsers = async (req: Request, res: Response) => {
@@ -79,7 +129,11 @@ export default class UserController {
     const respond = new Respond(res);
     try {
       const password = await hashPwd(req.body.password);
-      const account = await Account.create({ ...req.body, password, role: 'member' });
+      const account = await Account.create({
+        ...req.body,
+        password,
+        role: "member",
+      });
       return respond.success(201, {
         message: "Account created successfully, verify email",
         data: account,
