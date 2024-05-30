@@ -6,7 +6,7 @@ export default class AuthValidate {
   //nhatdn
   static createUser(req: Request, res: Response, next: NextFunction) {
     const schema = Joi.object().keys({
-      phoneId: Joi.string().required().min(5).max(20),
+      phoneId: Joi.string().required().min(5).max(30),
       type: Joi.string().required().valid("tracker", "trackee"),
     });
     const { error } = schema.validate(req.body);
