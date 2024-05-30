@@ -32,6 +32,10 @@ accountRoutes.post(
   "/edit-tracker-nickName",
   UserController.editTrackerInfo
 );
+accountRoutes.post(
+  "/edit-trackee-nickName",
+  UserController.editTrackeeInfo
+);
 
 //nhatdn end
 

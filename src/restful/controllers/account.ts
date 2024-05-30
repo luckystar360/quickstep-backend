@@ -173,6 +173,43 @@ export default class UserController {
       return respond.error(error);
     }
   };
+
+  static editTrackeeInfo = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { trackeeId, trackerId, nickName } = req.body;
+
+      const tracker = await Account.findOne({
+        _id: trackerId,
+        type: "tracker",
+      });
+
+      if (tracker == null)
+        return respond.success(404, {
+          message: "Tracker does not exist",
+          data: trackeeId,
+        });
+
+      for (const trackeeInfo of tracker.trackeeIdList ?? []) {
+        if (trackeeInfo["id"] == trackeeId) {
+          trackeeInfo["nickName"] = nickName;
+        }
+      }
+      const res = await Account.findByIdAndUpdate(trackerId, tracker);
+      if (res != null)
+        return respond.success(200, {
+          message: "Trackee nickname have been updated",
+          data: tracker,
+        });
+      else
+        return respond.success(409, {
+          message: "Trackee nickname can not been updated",
+          data: tracker,
+        });
+    } catch (error) {
+      return respond.error(error);
+    }
+  };
   //end nhatdn
 
   // Getting all users
