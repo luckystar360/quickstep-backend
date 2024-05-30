@@ -80,26 +80,30 @@ export default class UserController {
           message: "The Code does not exist",
           data: trackerCode,
         });
-      if (trackee.trackerIdList == null) trackee.trackerIdList = [];
 
       if (trackee.trackerIdList?.find((item) => item.id == tracker.id) == null)
-        trackee.trackerIdList.push({
-          id: tracker.id,
-          nickName: "tracker",
-          connectedTime: new Date(),
-        });
+        trackee.trackerIdList = [
+          ...(trackee.trackerIdList ?? []),
+          {
+            id: tracker.id,
+            nickName: "tracker",
+            connectedTime: new Date(),
+          },
+        ];
       else
         return respond.success(409, {
           message: "The tracker already exists",
           data: tracker,
         });
 
-      if (tracker.trackeeIdList == null) tracker.trackeeIdList = [];
-      tracker.trackeeIdList.push({
-        id: trackee.id,
-        nickName: "trackee",
-        connectedTime: new Date(),
-      });
+      tracker.trackeeIdList = [
+        ...(tracker.trackeeIdList ?? []),
+        {
+          id: trackee.id,
+          nickName: "trackee",
+          connectedTime: new Date(),
+        },
+      ];
 
       await Account.findByIdAndUpdate(trackee.id, trackee);
       await Account.findByIdAndUpdate(tracker.id, tracker);
@@ -117,7 +121,7 @@ export default class UserController {
           name: `group_${trackeeId}`,
           usersId: [trackeeId, tracker.id],
         });
-      } else if(existRooms.length > 0) {
+      } else if (existRooms.length > 0) {
         console.log("already exist room");
         for (const room of existRooms) {
           room.usersId = [...room.usersId, tracker.id];
