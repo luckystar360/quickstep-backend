@@ -5,6 +5,7 @@ import OTPService from "../../services/otp";
 import { sendEmail } from "../../services/send_mail";
 import { comparePwd, generateToken, hashPwd } from "../../utils/helpers";
 import Respond from "../../utils/respond";
+import { MessageRoom } from "../../database/models/message";
 
 export default class UserController {
   // nhatdn
@@ -82,7 +83,11 @@ export default class UserController {
       if (trackee.trackerIdList == null) trackee.trackerIdList = [];
 
       if (trackee.trackerIdList?.find((item) => item.id == tracker.id) == null)
-        trackee.trackerIdList.push({ id: tracker.id, nickName: "tracker", connectedTime: new Date()});
+        trackee.trackerIdList.push({
+          id: tracker.id,
+          nickName: "tracker",
+          connectedTime: new Date(),
+        });
       else
         return respond.success(409, {
           message: "The tracker already exists",
@@ -90,13 +95,35 @@ export default class UserController {
         });
 
       if (tracker.trackeeIdList == null) tracker.trackeeIdList = [];
-      tracker.trackeeIdList.push({ id: trackee.id, nickName: "trackee", connectedTime: new Date() });
+      tracker.trackeeIdList.push({
+        id: trackee.id,
+        nickName: "trackee",
+        connectedTime: new Date(),
+      });
 
       await Account.findByIdAndUpdate(trackee.id, trackee);
       await Account.findByIdAndUpdate(tracker.id, tracker);
 
       res.locals.io?.to(trackerCode).emit("newEvent", trackee);
 
+      // kiem tra xem da ton tai roomChat chua
+      const existRooms = await MessageRoom.find({
+        usersId: { $in: [trackeeId] },
+      });
+      if (existRooms.length === 0) {
+        console.log("create new room");
+        //neu chua ton tai roomChat cua trackee thi tao moi
+        await MessageRoom.create({
+          name: `group_${trackeeId}`,
+          usersId: [trackeeId, tracker.id],
+        });
+      } else if(existRooms.length > 0) {
+        console.log("already exist room");
+        for (const room of existRooms) {
+          room.usersId = [...room.usersId, tracker.id];
+          await MessageRoom.findByIdAndUpdate(room.id, room);
+        }
+      }
       return respond.success(200, {
         message: "Users have been paired",
         data: trackee,
