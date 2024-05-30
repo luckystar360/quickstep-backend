@@ -108,7 +108,7 @@ export default class UserController {
       await Account.findByIdAndUpdate(trackee.id, trackee);
       await Account.findByIdAndUpdate(tracker.id, tracker);
 
-      res.locals.io?.to(trackerCode).emit("newEvent", trackee);
+      res.locals.io?.to(trackerCode).emit("trackerPaired", trackee);
 
       // kiem tra xem da ton tai roomChat chua
       const existRooms = await MessageRoom.find({
@@ -130,8 +130,45 @@ export default class UserController {
       }
       return respond.success(200, {
         message: "Users have been paired",
-        data: trackee,
+        data: tracker,
       });
+    } catch (error) {
+      return respond.error(error);
+    }
+  };
+
+  static editTrackerInfo = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { trackeeId, trackerId, nickName } = req.body;
+
+      const trackee = await Account.findOne({
+        _id: trackeeId,
+        type: "trackee",
+      });
+
+      if (trackee == null)
+        return respond.success(404, {
+          message: "Trackee does not exist",
+          data: trackeeId,
+        });
+
+      for (const trackerInfo of trackee.trackerIdList ?? []) {
+        if (trackerInfo["id"] == trackerId) {
+          trackerInfo["nickName"] = nickName;
+        }
+      }
+      const res = await Account.findByIdAndUpdate(trackeeId, trackee);
+      if (res != null)
+        return respond.success(200, {
+          message: "Tracker nickname have been updated",
+          data: trackee,
+        });
+      else
+        return respond.success(409, {
+          message: "Tracker nickname can not been updated",
+          data: trackee,
+        });
     } catch (error) {
       return respond.error(error);
     }

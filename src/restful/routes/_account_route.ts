@@ -28,6 +28,11 @@ accountRoutes.post(
   "/connect-to-tracker", 
   UserController.connectToTracker
 );
+accountRoutes.post(
+  "/edit-tracker-nickName",
+  UserController.editTrackerInfo
+);
+
 //nhatdn end
 
 accountRoutes.get(
