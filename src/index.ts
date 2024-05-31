@@ -32,6 +32,7 @@ const io = new Server(server, {
   },
 });
 
+ 
 // Running when user connects
 io.on("connection", (socket: Socket) => {
   console.log('connection');
@@ -41,6 +42,11 @@ io.on("connection", (socket: Socket) => {
     console.log(userId);
     socket.join(userId);
     socket.emit("messageConnected", "You're connected to the RoomMessage");
+
+    socket.on("disconnect", () => {
+      console.log(`socket ${userId} disconneted`);
+    });
+
   })
 
   socket.on("createRoomMessage",async (data) => {
@@ -95,21 +101,8 @@ io.on("connection", (socket: Socket) => {
     //   room: user.room,
     //   users: getRoomUsers(user.room),
     // });
-
-    //Runs when clients disconnect
-    // socket.on("disconnect", () => {
-    //   const leavingUser = userLeave(user.id);
-    //   if (!leavingUser) return;
-    //   io.to(leavingUser.room).emit(
-    //     "connected",
-    //     `${leavingUser.username} has left the party`
-    //   );
-    //   //Send users and room info
-    //   io.to(user.room).emit("roomUsers", {
-    //     room: user.room,
-    //     users: getRoomUsers(user.room),
-    //   });
-    // });
+ 
+   
   // });
 });
 
