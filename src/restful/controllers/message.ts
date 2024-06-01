@@ -47,7 +47,7 @@ export default class MessageController {
     try {
       const { roomId } = req.body;
       const room = await MessageRoom.findById(roomId);
-      const message = await Message.create({ ...req.body, createdAt: Date.now() });
+      const message = await Message.create({ ...req.body });
       if (message != null) {
         res.locals.io.to(room?.usersId ?? []).emit("newMessage", message);
       }
