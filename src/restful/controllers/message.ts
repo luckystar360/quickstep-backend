@@ -47,7 +47,7 @@ export default class MessageController {
     try {
       const { roomId } = req.body;
       const room = await MessageRoom.findById(roomId);
-      const message = await Message.create({ ...req.body });
+      const message = await Message.create({ ...req.body, createdAt: Date.now(), updatedAt: Date.now() });
       if (message != null) {
         res.locals.io.to(room?.usersId ?? []).emit("newMessage", message);
       }
@@ -74,7 +74,7 @@ export default class MessageController {
           data: existRooms[0],
         });
       }
-      const room = await MessageRoom.create({ ...req.body });
+      const room = await MessageRoom.create({ ...req.body, createdAt: Date.now(), updatedAt: Date.now() });
       res.locals.io.to(usersId).emit("roomMessageCreated", room);
       return respond.success(201, {
         message: "create room successfully!",

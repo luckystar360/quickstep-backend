@@ -30,7 +30,7 @@ export default class UserController {
   static createUser = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const account = await Account.create({ ...req.body });
+      const account = await Account.create({ ...req.body, createdAt: Date.now(), updatedAt: Date.now() });
       return respond.success(201, {
         message: "Account created successfully!",
         data: account,
@@ -119,7 +119,9 @@ export default class UserController {
         //neu chua ton tai roomChat cua trackee thi tao moi
         await MessageRoom.create({
           name: `group_${trackeeId}`,
-          usersId: [trackeeId, tracker.id],
+          usersId: [trackeeId, tracker.id], 
+          createdAt: Date.now(), 
+          updatedAt: Date.now()
         });
       } else if (existRooms.length > 0) {
         console.log("already exist room");
@@ -238,6 +240,8 @@ export default class UserController {
         ...req.body,
         password,
         role: "member",
+        createdAt: Date.now(), 
+        updatedAt: Date.now()
       });
       return respond.success(201, {
         message: "Account created successfully, verify email",

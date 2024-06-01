@@ -53,7 +53,7 @@ io.on("connection", (socket: Socket) => {
     const userId = data.userId;
     const name = data.name;
     const usersId = data.usersId;
-    const room = await MessageRoom.create({name, usersId});
+    const room = await MessageRoom.create({name, usersId, createdAt: Date.now(), updatedAt: Date.now()});
     if(room.usersId.length == 2) {
       const user2Id = room.usersId.find((id)=> userId != id);
       const user2 = await Account.findById(user2Id);
@@ -79,7 +79,7 @@ io.on("connection", (socket: Socket) => {
       const { message, fromId, roomId } = data; 
       try {
         const room = await MessageRoom.findById(roomId);
-        const mess = await Message.create({ message, fromId, roomId });
+        const mess = await Message.create({ message, fromId, roomId, createdAt: Date.now(), updatedAt: Date.now() });
         if (mess != null) {
           io.to(room?.usersId ?? []).emit("newMessage", mess);
         }

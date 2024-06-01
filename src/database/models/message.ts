@@ -4,7 +4,10 @@ const messageSchema = new mongoose.Schema({
     message: { type: String, required: true },
     fromId: { type: String, required: true },
     roomId: { type: String, required: true},
-    createdAt: 'created_at',
+    createdAt: {
+        type: Date,
+        default: Date.now(),
+    },
     updatedAt: {
         type: Date,
         default: Date.now(),
