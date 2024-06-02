@@ -39,8 +39,10 @@ export default class TripController {
             const { tripId, lat, lon } = req.body;
             const trip = await Trip.findById(tripId);
             if (!trip) throw new Error("Trip not found");
-            trip.locations = [...trip.locations, {"lat":lat,"lon":lon}];
+            const newLocation = { "lat": lat, "lon": lon };
+            trip.locations = [...trip.locations, newLocation];
             await Trip.findByIdAndUpdate(tripId, trip);
+            res.locals.io?.to(tripId).emit("newLocation", newLocation);
             return respond.success(201, {
                 message: "add location successfully!",
                 data: trip,

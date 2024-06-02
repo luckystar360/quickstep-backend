@@ -39,13 +39,24 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("useMessage", (data) => {
     const userId = data.userId;
-    console.log(userId);
+    // console.log(userId);
     socket.join(userId);
     socket.emit("messageConnected", "You're connected to the RoomMessage");
+    
+    socket.on("disconnect", () => {
+      console.log(`userId: ${userId} disconneted`);
+    });
+  })
+
+  socket.on("useTrip", (data) => {
+    const tripId = data.tripId;
+    // console.log(tripId);
+    socket.join(tripId);
+    socket.emit("tripConnected", "You're connected to the Trip");
 
     socket.on("disconnect", () => {
-      console.log(`socket ${userId} disconneted`);
-    }); 
+      console.log(`tripId: ${tripId} disconneted`);
+    });
   })
 
   socket.on("waitToPair", async (data) => {
@@ -56,6 +67,8 @@ io.on("connection", (socket: Socket) => {
       console.log(error);
     }
   });
+
+
   //Send users and room info
   // io.to(user.room).emit("roomUsers", {
   //   room: user.room,
