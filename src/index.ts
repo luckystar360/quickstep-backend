@@ -32,12 +32,12 @@ const io = new Server(server, {
   },
 });
 
- 
+
 // Running when user connects
 io.on("connection", (socket: Socket) => {
   console.log('connection');
 
-  socket.on("useMessage", (data)=>{
+  socket.on("useMessage", (data) => {
     const userId = data.userId;
     console.log(userId);
     socket.join(userId);
@@ -45,64 +45,24 @@ io.on("connection", (socket: Socket) => {
 
     socket.on("disconnect", () => {
       console.log(`socket ${userId} disconneted`);
-    });
-
+    }); 
   })
 
-  socket.on("createRoomMessage",async (data) => {
-    const userId = data.userId;
-    const name = data.name;
-    const usersId = data.usersId;
-    const room = await MessageRoom.create({name, usersId, createdAt: Date.now(), updatedAt: Date.now()});
-    if(room.usersId.length == 2) {
-      const user2Id = room.usersId.find((id)=> userId != id);
-      const user2 = await Account.findById(user2Id);
-      room.name = user2?.fullName ?? user2Id;
+  socket.on("waitToPair", async (data) => {
+    const { trackerCode } = data;
+    try {
+      socket.join(trackerCode);
+    } catch (error: any) {
+      console.log(error);
     }
-    socket.broadcast.to(usersId).emit("roomMessageCreated", room);
   });
+  //Send users and room info
+  // io.to(user.room).emit("roomUsers", {
+  //   room: user.room,
+  //   users: getRoomUsers(user.room),
+  // });
 
-  // socket.on("joinRoomMessage", (data) => {
-  //   const roomId = data.roomId;
-  //   const userId = data.userId;
-  //   console.log(`roomId: ${roomId} userId: ${userId}`);
-  //   socket.join(roomId);
 
-  //   //Welcome to user
-  //   socket.emit("connected", "You're connected to the RoomMessage");
-  //   socket.broadcast
-  //     .to(roomId)
-  //     .emit("connected", `${userId} has joined the room`);
- 
-    //Chatting message
-    socket.on("addMessage", async (data) => {
-      const { message, fromId, roomId } = data; 
-      try {
-        const room = await MessageRoom.findById(roomId);
-        const mess = await Message.create({ message, fromId, roomId, createdAt: Date.now(), updatedAt: Date.now() });
-        if (mess != null) {
-          io.to(room?.usersId ?? []).emit("newMessage", mess);
-        }
-      } catch (error: any) {
-        console.log(error);
-      }
-    });
-
-    socket.on("waitToPair", async (data) => {
-      const { trackerCode } = data; 
-      try {
-        socket.join(trackerCode);
-      } catch (error: any) {
-        console.log(error);
-      }
-    });
-    //Send users and room info
-    // io.to(user.room).emit("roomUsers", {
-    //   room: user.room,
-    //   users: getRoomUsers(user.room),
-    // });
- 
-   
   // });
 });
 
