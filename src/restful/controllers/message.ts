@@ -50,9 +50,13 @@ export default class MessageController {
       const message = await Message.create({ ...req.body, createdAt: Date.now(), updatedAt: Date.now() });
       if (message != null) {
         res.locals.io.to(room?.usersId ?? []).emit("newMessage", message);
-      }
-      return respond.success(201, {
-        message: "add message successfully!",
+        return respond.success(201, {
+          message: "add message successfully!",
+          data: message,
+        });
+      } 
+      return respond.success(409, {
+        message: "Can not create message!",
         data: message,
       });
     } catch (error: any) {

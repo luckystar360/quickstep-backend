@@ -24,14 +24,31 @@ export default class AuthMiddleWare {
   //end nhatdn
 
   //check if the user already has account
-  static async isAccountExist(req: Request, res: Response, next: NextFunction) {
+  static async isEmailExist(req: Request, res: Response, next: NextFunction) {
     const respond = new Respond(res); 
     try {
-      const { email, phoneId } = req.body;
+      const { email } = req.body;
       const existEmail = await Account.findOne({ email }); 
       if (existEmail) {
         return respond.success(409, {
           message: "Account already exists",
+          data: undefined,
+        });
+      } 
+      next();
+    } catch (error) {
+      return respond.error(error);
+    }
+  }
+
+  static async isUserNotExist(req: Request, res: Response, next: NextFunction) {
+    const respond = new Respond(res); 
+    try {
+      const { userId } = req.body;
+      const existUser = await Account.findById(userId); 
+      if (existUser == null) {
+        return respond.success(404, {
+          message: "UserId do not exists",
           data: undefined,
         });
       } 

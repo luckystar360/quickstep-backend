@@ -6,10 +6,12 @@ import notificationRoutes from "./_notification_route";
 import profileRoutes from "./_profile_route";
 import swaggerUi from "swagger-ui-express";
 import config from "../../docs";
+import tripRoutes from "./_trip_route";
 
 const routes = express.Router();
 
 routes.use("/messages", messageRoutes);
+routes.use("/trips", tripRoutes);
 routes.use("/movements", movementRoutes);
 routes.use("/accounts", accountRoutes);
 routes.use("/notifications", notificationRoutes);

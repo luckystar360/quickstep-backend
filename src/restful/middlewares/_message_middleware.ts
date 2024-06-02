@@ -15,14 +15,14 @@ export default class MessageMiddleWare {
             try {
                 id = new mongoose.Types.ObjectId(roomId);
             } catch {
-                return respond.success(409, {
+                return respond.success(404, {
                     message: "roomId does not exist",
                     data: undefined,
                 });
             }
             const existRoomId = await MessageRoom.findById(id);
             if (existRoomId == null) {
-                return respond.success(409, {
+                return respond.success(404, {
                     message: "roomId does not exist",
                     data: undefined,
                 });

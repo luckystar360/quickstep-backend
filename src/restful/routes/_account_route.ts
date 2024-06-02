@@ -48,7 +48,7 @@ accountRoutes.get(
 accountRoutes.post(
   "/create",
   AuthValidate.create,
-  AuthMiddleWare.isAccountExist,
+  AuthMiddleWare.isEmailExist,
   UserController.createAccount
 );
 

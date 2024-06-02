@@ -7,7 +7,7 @@ const notificationSchema = new mongoose.Schema({
   data: { type: Schema.Types.Mixed, required: true },
   createdAt: {
     type: Date,
-    default: Date.now(),
+    default: () =>Date.now(),
   },
 });
 
