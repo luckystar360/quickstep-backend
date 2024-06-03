@@ -26,9 +26,8 @@ export default class TripController {
   static getTrips = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const { tripIds } = req.params;
-      var array = tripIds.split(",");
-      const trips = await Trip.find({ _id: { $in: array } }).sort({
+      const { userId } = req.params;
+      const trips = await Trip.find({ userId: userId }).sort({
         createdAt: -1,
       });
       return respond.success(200, {
