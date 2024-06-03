@@ -48,7 +48,7 @@ export default class TripController {
       if (!trip) throw new Error("Trip not found");
       const newLocation = { lat: lat, lon: lon };
       trip.locations = [...trip.locations, newLocation];
-      await Trip.findByIdAndUpdate(tripId, trip);
+      await Trip.findByIdAndUpdate(tripId, { ...trip, updatedAt: Date.now() });
       res.locals.io?.to(tripId).emit("newLocation", newLocation);
       return respond.success(201, {
         message: "add location successfully!",
