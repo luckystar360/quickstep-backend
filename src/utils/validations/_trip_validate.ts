@@ -22,8 +22,8 @@ export default class TripValidate {
     static addLocation(req: Request, res: Response, next: NextFunction) {
         const schema = Joi.object().keys({
             tripId: Joi.string().required().id(),
-            lat: Joi.string().required().min(0).max(10),
-            lon: Joi.string().required().min(0).max(10),
+            lat: Joi.string().required().min(0).max(15),
+            lon: Joi.string().required().min(0).max(15),
         });
         const { error } = schema.validate(req.body);
         if (error) {
