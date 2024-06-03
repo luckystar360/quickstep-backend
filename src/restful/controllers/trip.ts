@@ -6,12 +6,13 @@ export default class TripController {
   static createTrip = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
+      const { userId } = req.body;
       const trip = await Trip.create({
         ...req.body,
         createdAt: Date.now(),
         updatedAt: Date.now(),
       });
-      res.locals.io?.to(trip.id).emit("newTrip", trip);
+      res.locals.io?.to(userId).emit("newTrip", trip);
       return respond.success(201, {
         message: "Trip created successfully!",
         data: trip,
