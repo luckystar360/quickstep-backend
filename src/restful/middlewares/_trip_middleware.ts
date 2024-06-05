@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import Respond from "../../utils/respond";
+import {Respond} from "../../utils/respond";
 import Trip from "../../database/models/trip";
 
 export default class TripMiddleWare {

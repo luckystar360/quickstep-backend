@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Account from "../../database/models/account";
 import { verifyToken } from "../../utils/helpers";
-import Respond from "../../utils/respond";
+import {Respond} from "../../utils/respond";
 
 export default class AuthMiddleWare {
   //nhatdn

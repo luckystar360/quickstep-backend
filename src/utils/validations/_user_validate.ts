@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Joi from "joi";
-import Respond from "../respond";
+import {Respond} from "../respond";
 
 export default class AuthValidate {
   //nhatdn
