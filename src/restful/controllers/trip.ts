@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import Trip from "../../database/models/trip";
-import Respond from "../../utils/respond";
+import {PaginationRespond, Respond} from "../../utils/respond";
 
 export default class TripController {
   static createTrip = async (req: Request, res: Response) => {
@@ -24,15 +24,23 @@ export default class TripController {
   };
 
   static getTrips = async (req: Request, res: Response) => {
-    const respond = new Respond(res);
+    const respond = new PaginationRespond(res);
     try {
-      const { userId } = req.params;
+      const { userId, page=0, limit=5 } = req.params;
+      const pageNumber = Number(page) ;
+      const limitNumber = Number(limit);
+      const offset = pageNumber * limitNumber;
+      const total = await Trip.count();
       const trips = await Trip.find({ userId: userId }).sort({
         createdAt: -1,
-      });
+      }).skip(offset).limit(limitNumber);
+      const prevPage = page > 0 ? (pageNumber -1) : undefined;
+      const nextPage = page < (total / limitNumber) ? pageNumber + 1 : undefined;
       return respond.success(200, {
         message: "Trips retrieved successfully",
-        count: trips.length,
+        total: total,
+        prevPage: prevPage,
+        nextPage: nextPage,
         data: trips,
       });
     } catch (error) {

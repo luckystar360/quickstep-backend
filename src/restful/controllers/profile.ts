@@ -1,4 +1,4 @@
-import Respond from "../../utils/respond";
+import {Respond} from "../../utils/respond";
 import { Response, Request } from "express";
 import Profile from "../../database/models/profile";
 import mongoose from "mongoose";

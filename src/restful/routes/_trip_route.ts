@@ -17,7 +17,7 @@ tripRoutes.post(
 );
 
 tripRoutes.get(
-  "/get-trip/:userId",
+  "/get-trip/:userId/:page/:limit",
   // AuthMiddleWare.isLoggedIn,
   // AuthMiddleWare.isAdmin,
   TripController.getTrips

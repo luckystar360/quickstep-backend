@@ -4,7 +4,7 @@ import Profile from "../../database/models/profile";
 import OTPService from "../../services/otp";
 import { sendEmail } from "../../services/send_mail";
 import { comparePwd, generateToken, hashPwd } from "../../utils/helpers";
-import Respond from "../../utils/respond";
+import {Respond} from "../../utils/respond";
 import { MessageRoom } from "../../database/models/message";
 
 export default class UserController {

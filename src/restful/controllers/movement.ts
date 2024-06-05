@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Movement from "../../database/models/movement";
-import Respond from "../../utils/respond";
+import {Respond} from "../../utils/respond";
 
 // Getting all movements
 export const getAllMovements = async (req: Request, res: Response) => {
