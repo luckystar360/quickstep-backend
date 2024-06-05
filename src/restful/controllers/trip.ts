@@ -27,15 +27,15 @@ export default class TripController {
     const respond = new PaginationRespond(res);
     try {
       const { userId, page=0, limit=5 } = req.params;
-      const pageNumber = Number(page) ;
-      const limitNumber = Number(limit);
+      const pageNumber = Number.parseInt(page.toString()) ;
+      const limitNumber = Number.parseInt(limit.toString());
       const offset = pageNumber * limitNumber;
-      const total = await Trip.count();
+      const total = await Trip.count(); 
       const trips = await Trip.find({ userId: userId }).sort({
         createdAt: -1,
       }).skip(offset).limit(limitNumber);
-      const prevPage = page > 0 ? (pageNumber -1) : undefined;
-      const nextPage = page < (total / limitNumber) ? pageNumber + 1 : undefined;
+      const prevPage = (page > 0 && page < (total / limitNumber)) ? (pageNumber -1) : undefined;
+      const nextPage = (page >= 0 && page < (total / limitNumber) - 1) ? pageNumber + 1 : undefined;
       return respond.success(200, {
         message: "Trips retrieved successfully",
         total: total,
