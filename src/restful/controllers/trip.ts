@@ -30,7 +30,7 @@ export default class TripController {
       const pageNumber = Number.parseInt(page.toString()) ;
       const limitNumber = Number.parseInt(limit.toString());
       const offset = pageNumber * limitNumber;
-      const total = await Trip.count(); 
+      const total = await Trip.find({ userId: userId }).count(); 
       const trips = await Trip.find({ userId: userId }).sort({
         createdAt: -1,
       }).skip(offset).limit(limitNumber);
