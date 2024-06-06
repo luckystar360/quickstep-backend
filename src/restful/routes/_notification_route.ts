@@ -8,7 +8,7 @@ import AuthMiddleWare from "../middlewares/_auth_middleware";
 
 const notificationRoutes = express.Router();
 
-notificationRoutes.post("/sendSOS", sendSOS);
+notificationRoutes.post("/send-sos", sendSOS);
 
 notificationRoutes.get("/", AuthMiddleWare.isLoggedIn, getNotifications);
 notificationRoutes.delete(
