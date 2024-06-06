@@ -35,14 +35,12 @@ const io = new Server(server, {
 
 // Running when user connects
 io.on("connection", (socket: Socket) => {
-  console.log('connection');
-
-  socket.on("useMessage", (data) => {
+  console.log('connection'); 
+  socket.on("joinGroup", (data) => {
     const userId = data.userId;
     // console.log(userId);
     socket.join(userId);
-    socket.emit("messageConnected", "You're connected to the RoomMessage");
-    
+    socket.emit("joinedGroup", "You're joined to the UserGroup");
     socket.on("disconnect", () => {
       console.log(`userId: ${userId} disconneted`);
     });

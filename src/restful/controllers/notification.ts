@@ -1,6 +1,19 @@
 import Notification from "../../database/models/notification";
 import { Request, Response } from "express";
 
+//Sending SOS
+export const sendSOS = async (req: Request, res: Response) => {
+  try {
+    const { toUserIds } = req.body;
+    res.locals.io.to(toUserIds).emit("sosFromTrackee");
+    return res.status(200).json({ message: "SOS has been sent successfully" });
+  } catch (error: any) {
+    return res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 //Sending new notification
 export async function sendNotification(
   message: string,

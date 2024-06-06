@@ -30,12 +30,12 @@ export default class TripController {
       const pageNumber = Number.parseInt(page.toString()) ;
       const limitNumber = Number.parseInt(limit.toString());
       const offset = pageNumber * limitNumber;
-      const total = await Trip.find({ userId: userId }).count(); 
+      const total = await Trip.find({ userId: userId }).count();
       const trips = await Trip.find({ userId: userId }).sort({
         createdAt: -1,
       }).skip(offset).limit(limitNumber);
-      const prevPage = (page > 0 && page < (total / limitNumber)) ? (pageNumber -1) : undefined;
-      const nextPage = (page >= 0 && page < (total / limitNumber) - 1) ? pageNumber + 1 : undefined;
+      const prevPage = (pageNumber > 0 && pageNumber < (total / limitNumber)) ? (pageNumber -1) : undefined;
+      const nextPage = (pageNumber >= 0 && pageNumber < (total / limitNumber) - 1) ? pageNumber + 1 : undefined;
       return respond.success(200, {
         message: "Trips retrieved successfully",
         total: total,
