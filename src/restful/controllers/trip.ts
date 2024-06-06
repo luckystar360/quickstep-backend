@@ -1,6 +1,7 @@
 import { Response, Request } from "express";
 import Trip from "../../database/models/trip";
 import {PaginationRespond, Respond} from "../../utils/respond";
+import Account from "../../database/models/account";
 
 export default class TripController {
   static createTrip = async (req: Request, res: Response) => {
@@ -52,13 +53,17 @@ export default class TripController {
     const respond = new Respond(res);
     try {
       const { tripId, lat, lon } = req.body;
-      const trip = await Trip.findById(tripId);
+      const trip = await Trip.findById(tripId); 
       if (!trip) throw new Error("Trip not found");
+      const trackee = await Account.findById(trip.id);
+      if (!trackee) throw new Error("Trackee not found");
+      const trackerIds = trackee.trackerIdList?.map(item=>item.id);
       const newLocation = { lat: lat, lon: lon };
       trip.locations = [...trip.locations, newLocation];
       trip.updatedAt = new Date();
       await Trip.findByIdAndUpdate(tripId, trip);
       res.locals.io?.to(tripId).emit("newLocation", newLocation);
+      res.locals.io?.to(trackerIds).emit("newLocation", newLocation);
       return respond.success(201, {
         message: "add location successfully!",
         data: trip,
