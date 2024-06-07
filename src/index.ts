@@ -43,6 +43,37 @@ io.on("connection", (socket: Socket) => {
     socket.on("disconnect", () => {
       console.log(`userId: ${userId} disconneted`);
     });
+
+    // signaling
+    socket.on("makeCall", (data) => {
+      let calleeId = data.calleeId;
+      let sdpOffer = data.sdpOffer;
+
+      socket.to(calleeId).emit("newCall", {
+        callerId: userId,
+        sdpOffer: sdpOffer,
+      });
+    });
+
+    socket.on("answerCall", (data) => {
+      let callerId = data.callerId;
+      let sdpAnswer = data.sdpAnswer;
+
+      socket.to(callerId).emit("callAnswered", {
+        callee: userId,
+        sdpAnswer: sdpAnswer,
+      });
+    });
+
+    socket.on("IceCandidate", (data) => {
+      let calleeId = data.calleeId;
+      let iceCandidate = data.iceCandidate;
+
+      socket.to(calleeId).emit("IceCandidate", {
+        sender: userId,
+        iceCandidate: iceCandidate,
+      });
+    });
   });
 
   socket.on("useTrip", (data) => {
@@ -60,34 +91,6 @@ io.on("connection", (socket: Socket) => {
     const { trackerCode } = data;
     try {
       socket.join(trackerCode);
-    } catch (error: any) {
-      console.log(error);
-    }
-  });
-
-  // for webrtc
-  socket.on("createPeer", async (data) => {
-    try {
-      const { fromId, destId, peerId } = data;
-      socket.to(destId).emit("peerCreating", {fromId, peerId});
-    } catch (error: any) {
-      console.log(error);
-    }
-  });
-
-  socket.on("acceptPeer", async (data) => {
-    try {
-      const { fromId, destId, peerId } = data;
-      socket.to(destId).emit("peerAccepted", {fromId, peerId});
-    } catch (error: any) {
-      console.log(error);
-    }
-  });
-
-  socket.on("destroyPeer", async (data) => {
-    try {
-      const { fromId, destId, peerId } = data;
-      socket.to(destId).emit("peerDestroyed", {fromId, peerId});
     } catch (error: any) {
       console.log(error);
     }
