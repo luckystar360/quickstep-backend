@@ -32,10 +32,9 @@ const io = new Server(server, {
   },
 });
 
-
 // Running when user connects
 io.on("connection", (socket: Socket) => {
-  console.log('connection'); 
+  console.log("connection");
   socket.on("joinGroup", (data) => {
     const userId = data.userId;
     // console.log(userId);
@@ -44,7 +43,7 @@ io.on("connection", (socket: Socket) => {
     socket.on("disconnect", () => {
       console.log(`userId: ${userId} disconneted`);
     });
-  })
+  });
 
   socket.on("useTrip", (data) => {
     const tripId = data.tripId;
@@ -55,7 +54,7 @@ io.on("connection", (socket: Socket) => {
     socket.on("disconnect", () => {
       console.log(`tripId: ${tripId} disconneted`);
     });
-  })
+  });
 
   socket.on("waitToPair", async (data) => {
     const { trackerCode } = data;
@@ -66,13 +65,39 @@ io.on("connection", (socket: Socket) => {
     }
   });
 
+  // for webrtc
+  socket.on("createPeer", async (data) => {
+    try {
+      const { fromId, destId, peerId } = data;
+      socket.to(destId).emit("peerCreating", {fromId, peerId});
+    } catch (error: any) {
+      console.log(error);
+    }
+  });
+
+  socket.on("acceptPeer", async (data) => {
+    try {
+      const { fromId, destId, peerId } = data;
+      socket.to(destId).emit("peerAccepted", {fromId, peerId});
+    } catch (error: any) {
+      console.log(error);
+    }
+  });
+
+  socket.on("destroyPeer", async (data) => {
+    try {
+      const { fromId, destId, peerId } = data;
+      socket.to(destId).emit("peerDestroyed", {fromId, peerId});
+    } catch (error: any) {
+      console.log(error);
+    }
+  });
 
   //Send users and room info
   // io.to(user.room).emit("roomUsers", {
   //   room: user.room,
   //   users: getRoomUsers(user.room),
   // });
-
 
   // });
 });
