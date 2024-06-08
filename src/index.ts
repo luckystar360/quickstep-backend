@@ -28,6 +28,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const realm = 'myRealm';
 var turnServer = new Turn({
   // set options
   listeningPort: turnPort,
@@ -35,6 +36,7 @@ var turnServer = new Turn({
   credentials: {
     [turnUsername]: turnPassword
   },
+  realm: realm,
   debugLevel: 'ALL',
   minPort: 49152,
   maxPort: 65535,
