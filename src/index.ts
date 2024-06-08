@@ -31,10 +31,7 @@ app.use(express.json());
 var turnServer = new Turn({
   // set options
   listeningPort: turnPort,
-  authMech: 'long-term',
-  credentials: {
-    [turnUsername]: turnPassword
-  },
+  authMech: 'long-term', 
   debugLevel: 'ALL',
   minPort: 49152,
   maxPort: 65535,
