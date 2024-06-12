@@ -55,7 +55,7 @@ export default class TripController {
       const { tripId, lat, lon } = req.body;
       const trip = await Trip.findById(tripId); 
       if (!trip) throw new Error("Trip not found");
-      const trackee = await Account.findById(trip.id);
+      const trackee = await Account.findById(trip.userId);
       if (!trackee) throw new Error("Trackee not found");
       const trackerIds = trackee.trackerIdList?.map(item=>item.id);
       const newLocation = { lat: lat, lon: lon, userId: trip.userId };
