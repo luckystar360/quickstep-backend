@@ -14,6 +14,7 @@ import User from "./@types/user";
 import { connectDB } from "./database/config";
 import { Message, MessageRoom } from "./database/models/message";
 import Account from "./database/models/account";
+import MobileInfo from "./database/models/mobile_info";
 
 dotenv.config();
 
@@ -22,8 +23,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -36,12 +35,40 @@ const io = new Server(server, {
 // Running when user connects
 io.on("connection", (socket: Socket) => {
   console.log("connection");
-  socket.on("joinGroup", (data) => {
+  socket.on("joinGroup", async (data) => {
     const userId = data.userId;
     // console.log(userId);
     socket.join(userId);
     socket.emit("joinedGroup", "You're joined to the UserGroup");
-    socket.on("disconnect", () => {
+
+    try {
+      // create MobileInfo if dont exist
+      const existMobileInfo = await MobileInfo.findOne({ userId: userId });
+      if (existMobileInfo == null) {
+        await MobileInfo.create({
+          userId,
+          status: "online",
+          lastOnline: Date.now(),
+        });
+      } else {
+        await MobileInfo.findByIdAndUpdate(userId, {
+          status: "online",
+          lastOnline: Date.now(),
+          updatedAt: Date.now(),
+        });
+      }
+    } catch (error) {
+      console.log("MobileInfo update error");
+    }
+    socket.on("disconnect", async () => {
+      try {
+        await MobileInfo.findByIdAndUpdate(userId, {
+          status: "offline",
+          updatedAt: Date.now(),
+        });
+      } catch (error) {
+        console.log("MobileInfo update error");
+      }
       console.log(`userId: ${userId} disconneted`);
     });
 
@@ -67,7 +94,7 @@ io.on("connection", (socket: Socket) => {
     });
 
     socket.on("leaveCall", (data) => {
-      let calleeId = data.calleeId; 
+      let calleeId = data.calleeId;
 
       socket.to(calleeId).emit("callLeft", {
         caller: userId,
@@ -139,4 +166,3 @@ server.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT} 🔥`);
   await connectDB();
 });
- 
