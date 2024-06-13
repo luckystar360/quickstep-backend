@@ -40,18 +40,18 @@ io.on("connection", (socket: Socket) => {
     // console.log(userId);
     socket.join(userId);
     socket.emit("joinedGroup", "You're joined to the UserGroup");
-
+    let existMobileInfo = null;
     try {
       // create MobileInfo if dont exist
-      const existMobileInfo = await MobileInfo.findOne({ userId: userId });
+      existMobileInfo = await MobileInfo.findOne({ userId: userId });
       if (existMobileInfo == null) {
-        await MobileInfo.create({
+        existMobileInfo = await MobileInfo.create({
           userId,
           status: "online",
           lastOnline: Date.now(),
         });
       } else {
-        await MobileInfo.findByIdAndUpdate(userId, {
+        await MobileInfo.findByIdAndUpdate(existMobileInfo.id, {
           status: "online",
           lastOnline: Date.now(),
           updatedAt: Date.now(),
@@ -62,7 +62,7 @@ io.on("connection", (socket: Socket) => {
     }
     socket.on("disconnect", async () => {
       try {
-        await MobileInfo.findByIdAndUpdate(userId, {
+        await MobileInfo.findByIdAndUpdate(existMobileInfo?.id, {
           status: "offline",
           updatedAt: Date.now(),
         });
