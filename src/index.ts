@@ -52,7 +52,7 @@ io.on("connection", (socket: Socket) => {
         });
       } else {
         await MobileInfo.findByIdAndUpdate(userId, {
-          status: "offline",
+          status: "online",
           lastOnline: Date.now(),
           updatedAt: Date.now(),
         });
