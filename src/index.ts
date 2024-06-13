@@ -60,7 +60,7 @@ io.on("connection", (socket: Socket) => {
 
       socket.on("disconnect", async () => {
         try {
-          await MobileInfo.findByIdAndUpdate(existMobileInfo.id, {
+          await MobileInfo.findByIdAndUpdate(existMobileInfo?.id ?? '', {
             status: "offline",
             updatedAt: Date.now(),
           });
