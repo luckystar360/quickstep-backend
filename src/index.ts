@@ -41,37 +41,32 @@ io.on("connection", (socket: Socket) => {
     socket.join(userId);
     socket.emit("joinedGroup", "You're joined to the UserGroup");
 
-    try {
-      // create MobileInfo if dont exist
-      let existMobileInfo = await MobileInfo.findOne({ userId: userId });
-      if (existMobileInfo == null) {
-        existMobileInfo = await MobileInfo.create({
-          userId,
-          status: "online",
-          lastOnline: Date.now(),
-        });
-      } else {
+    // create MobileInfo if dont exist
+    let existMobileInfo = await MobileInfo.findOne({ userId: userId });
+    if (existMobileInfo == null) {
+      existMobileInfo = await MobileInfo.create({
+        userId,
+        status: "online",
+        lastOnline: Date.now(),
+      });
+    } else {
+      await MobileInfo.findByIdAndUpdate(existMobileInfo.id, {
+        status: "online",
+        lastOnline: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+
+    socket.on("disconnect", async () => {
+      if(existMobileInfo != null)
+      {
         await MobileInfo.findByIdAndUpdate(existMobileInfo.id, {
-          status: "online",
-          lastOnline: Date.now(),
+          status: "offline",
           updatedAt: Date.now(),
         });
       }
-
-      socket.on("disconnect", async () => {
-        try {
-          await MobileInfo.findByIdAndUpdate(existMobileInfo?.id ?? '', {
-            status: "offline",
-            updatedAt: Date.now(),
-          });
-        } catch (error) {
-          console.log("MobileInfo update error");
-        }
-        console.log(`userId: ${userId} disconneted`);
-      });
-    } catch (error) {
-      console.log(error);
-    }
+      console.log(`userId: ${userId} disconneted`);
+    });
 
     // signaling
     socket.on("makeCall", (data) => {
