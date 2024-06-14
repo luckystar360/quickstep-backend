@@ -10,4 +10,8 @@ deviceInfoRoutes.get(
   MobileInfoController.getMobileInfo
 );
 
+deviceInfoRoutes.post(
+  "/update-deviceinfo", 
+  MobileInfoController.updateMobileInfo
+);
 export default deviceInfoRoutes;
