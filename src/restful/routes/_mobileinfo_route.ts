@@ -14,7 +14,7 @@ deviceInfoRoutes.get(
 
 deviceInfoRoutes.post(
   "/update-deviceinfo", 
-  AuthMiddleWare.isPhoneIdExist,
+  AuthMiddleWare.isPhoneIdNotExist,
   MobileInfoValidate.updateMobileInfo,
   MobileInfoController.updateMobileInfo
 );

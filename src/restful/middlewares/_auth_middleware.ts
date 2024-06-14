@@ -21,6 +21,23 @@ export default class AuthMiddleWare {
       return respond.error(error);
     }
   }
+
+  static async isPhoneIdNotExist(req: Request, res: Response, next: NextFunction) {
+    const respond = new Respond(res);
+    try {
+      const { phoneId } = req.body; 
+      const existPhoneId = await Account.findOne({ phoneId }); 
+      if (!existPhoneId) {
+        return respond.success(404, {
+          message: "PhoneId does not exist",
+          data: undefined,
+        });
+      } 
+      next();
+    } catch (error) {
+      return respond.error(error);
+    }
+  }
   //end nhatdn
 
   //check if the user already has account
