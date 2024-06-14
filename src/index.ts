@@ -37,11 +37,11 @@ io.on("connection", (socket: Socket) => {
   console.log("connection");
   socket.on("joinGroup", async (data) => {
     const userId = data.userId;
-    if(userId == null) return;
+    if (userId == null) return;
     // console.log(userId);
     socket.join(userId);
     socket.emit("joinedGroup", "You're joined to the UserGroup");
- 
+
     // create MobileInfo if dont exist
     let existMobileInfo = await MobileInfo.findOne({ userId: userId });
     if (existMobileInfo == null) {
@@ -58,13 +58,12 @@ io.on("connection", (socket: Socket) => {
     }
 
     const existUser = await Account.findById(userId);
+    let broadcastIds: string[] = [];
     if (existUser != null) {
       const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
       const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
-      io.to([...trackerIds, ...trackeeIds] as string[]).emit(
-        "mobileInfoUpdate",
-        existMobileInfo
-      );
+      broadcastIds = [...trackerIds, ...trackeeIds] as string[];
+      io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
     }
 
     socket.on("disconnect", async () => {
@@ -72,6 +71,7 @@ io.on("connection", (socket: Socket) => {
         existMobileInfo.status = "offline";
         existMobileInfo.updatedAt = new Date();
         await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
+        io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
       }
       console.log(`userId: ${userId} disconneted`);
     });
