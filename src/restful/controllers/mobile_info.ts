@@ -33,8 +33,7 @@ export default class MobileInfoController {
         mobileInfo = await MobileInfo.create({ ...req.body });
       } else {
         mobileInfo.updatedAt = new Date();
-        let mergedInfo = { ...mobileInfo, ...req.body };
-        mobileInfo = { ...mergedInfo};
+    
         await MobileInfo.findByIdAndUpdate(mobileInfo?.id, mobileInfo!);
       }
       const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
