@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 const MobileInfoSchema = new mongoose.Schema({
-  userId: { type: String, required: true },
-  status: { type: String, required: true },
+  phoneId: { type: String, required: true },
+  wifi: { type: String },
   battery: { type: Number },
   lastOnline: {
     type: Date,
