@@ -38,41 +38,50 @@ io.on("connection", (socket: Socket) => {
   socket.on("joinGroup", async (data) => {
     const userId = data.userId;
     if (userId == null) return;
-    // console.log(userId);
+    const existUser = await Account.findById(userId);
+    if (existUser == null) return;
+    const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
+    const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
+    const broadcastIds = [...trackerIds, ...trackeeIds] as string[];
+
     socket.join(userId);
     socket.emit("joinedGroup", "You're joined to the UserGroup");
 
-    // create MobileInfo if dont exist
-    let existMobileInfo = await MobileInfo.findOne({ userId: userId });
-    if (existMobileInfo == null) {
-      existMobileInfo = await MobileInfo.create({
-        userId,
-        status: "online",
-        lastOnline: Date.now(),
-      });
-    } else {
-      existMobileInfo.status = "online";
-      existMobileInfo.lastOnline = new Date();
-      existMobileInfo.updatedAt = new Date();
-      await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
-    }
+    // notify user status
+    existUser.status = "online";
+    existUser.updatedAt = new Date();
+    await Account.findByIdAndUpdate(undefined, existUser);
+    io.to(broadcastIds).emit("userStatusChange", existUser);
 
-    const existUser = await Account.findById(userId);
-    let broadcastIds: string[] = [];
-    if (existUser != null) {
-      const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
-      const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
-      broadcastIds = [...trackerIds, ...trackeeIds] as string[];
-      io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
-    }
+    // // create MobileInfo if dont exist
+    // let existMobileInfo = await MobileInfo.findOne({ userId: userId });
+    // if (existMobileInfo == null) {
+    //   existMobileInfo = await MobileInfo.create({
+    //     userId,
+    //     status: "online",
+    //     lastOnline: Date.now(),
+    //   });
+    // } else {
+    //   existMobileInfo.status = "online";
+    //   existMobileInfo.lastOnline = new Date();
+    //   existMobileInfo.updatedAt = new Date();
+    //   await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
+    // }
+
+    // const existUser = await Account.findById(userId);
+    // let broadcastIds: string[] = [];
+    // if (existUser != null) {
+    //   const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
+    //   const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
+    //   broadcastIds = [...trackerIds, ...trackeeIds] as string[];
+    //   io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
+    // }
 
     socket.on("disconnect", async () => {
-      if (existMobileInfo != null) {
-        existMobileInfo.status = "offline";
-        existMobileInfo.updatedAt = new Date();
-        await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
-        io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
-      }
+      existUser.status = "offline";
+      existUser.updatedAt = new Date();
+      await Account.findByIdAndUpdate(undefined, existUser);
+      io.to(broadcastIds).emit("userStatusChange", existUser);
       console.log(`userId: ${userId} disconneted`);
     });
 

@@ -13,6 +13,11 @@ const accountSchema = new mongoose.Schema({
   email: { type: String },
   password: { type: String },
   verified: { type: Boolean, required: true, default: false },
+  status: {
+    type: String,
+    enum: ["online", "offline"],
+    default: "offline",
+  },
   role: {
     type: String,
     required: true,
@@ -26,9 +31,7 @@ const accountSchema = new mongoose.Schema({
     default: "tracker",
   },
   trackerIdList: {
-    type: [
-      { id: String, nickName: String, connectedTime: Date }
-    ],
+    type: [{ id: String, nickName: String, connectedTime: Date }],
     default: undefined,
   },
   trackeeIdList: {
