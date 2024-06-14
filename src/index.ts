@@ -37,10 +37,11 @@ io.on("connection", (socket: Socket) => {
   console.log("connection");
   socket.on("joinGroup", async (data) => {
     const userId = data.userId;
+    if(userId == null) return;
     // console.log(userId);
     socket.join(userId);
     socket.emit("joinedGroup", "You're joined to the UserGroup");
-
+ 
     // create MobileInfo if dont exist
     let existMobileInfo = await MobileInfo.findOne({ userId: userId });
     if (existMobileInfo == null) {
