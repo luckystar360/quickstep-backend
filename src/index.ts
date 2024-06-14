@@ -50,20 +50,27 @@ io.on("connection", (socket: Socket) => {
         lastOnline: Date.now(),
       });
     } else {
-      await MobileInfo.findByIdAndUpdate(existMobileInfo.id, {
-        status: "online",
-        lastOnline: Date.now(),
-        updatedAt: Date.now(),
-      });
+      existMobileInfo.status = "online";
+      existMobileInfo.lastOnline = new Date();
+      existMobileInfo.updatedAt = new Date();
+      await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
+    }
+
+    const existUser = await Account.findById(userId);
+    if (existUser != null) {
+      const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
+      const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
+      io.to([...trackerIds, ...trackeeIds] as string[]).emit(
+        "mobileInfoUpdate",
+        existMobileInfo
+      );
     }
 
     socket.on("disconnect", async () => {
-      if(existMobileInfo != null)
-      {
-        await MobileInfo.findByIdAndUpdate(existMobileInfo.id, {
-          status: "offline",
-          updatedAt: Date.now(),
-        });
+      if (existMobileInfo != null) {
+        existMobileInfo.status = "offline";
+        existMobileInfo.updatedAt = new Date();
+        await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
       }
       console.log(`userId: ${userId} disconneted`);
     });
