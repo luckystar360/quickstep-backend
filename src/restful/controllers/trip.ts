@@ -89,11 +89,11 @@ export default class TripController {
       const { userId, lat, lon, name } = req.body;
       const tracker = await Account.findOne({ _id: userId, type: "tracker" });
       if (!tracker) throw new Error("Tracker not found");
-      const newMarker = { lat: lat, lon: lon, userId, name };
-      await Marker.create(newMarker);
+      const location = { lat: lat, lon: lon };
+      const marker = await Marker.create({userId, name, location});
       return respond.success(201, {
         message: "add marker successfully!",
-        data: newMarker,
+        data: marker,
       });
     } catch (error: any) {
       console.log(error);
