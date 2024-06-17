@@ -107,7 +107,8 @@ export default class TripController {
       const { markerId, lat, lon, name, enable } = req.body;
       let marker = await Marker.findById(markerId);
       if (!marker) throw new Error("Marker not found");
-      marker.location = {...(marker.location as any).toObject(), ...({lat, lon} as any)};
+      if(lat && lon)
+        marker.location = {lat, lon};
       marker.updatedAt = new Date();
       marker = { ...marker.toObject(), ...({ name, enable } as any) };
       await Marker.findByIdAndUpdate(markerId, marker!);
