@@ -110,7 +110,7 @@ export default class TripController {
       marker.location = { ...marker.location, lat, lon };
       marker.updatedAt = new Date();
       marker = { ...marker.toObject(), ...({ name, enable } as any) };
-      await Marker.findByIdAndUpdate(markerId, marker);
+      await Marker.findByIdAndUpdate(markerId, marker!);
       return respond.success(201, {
         message: "edit marker successfully!",
         data: marker,
