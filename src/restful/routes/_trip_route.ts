@@ -30,4 +30,18 @@ tripRoutes.post(
   TripController.addLocation
 );
 
+tripRoutes.post(
+  "/add-marker",
+  AuthMiddleWare.isTrackerNotExist,
+  TripValidate.addMarker,
+  TripController.addMarker
+);
+
+tripRoutes.get(
+  "/get-markers/:userId",
+  // AuthMiddleWare.isLoggedIn,
+  // AuthMiddleWare.isAdmin,
+  TripController.getMarker
+);
+
 export default tripRoutes;

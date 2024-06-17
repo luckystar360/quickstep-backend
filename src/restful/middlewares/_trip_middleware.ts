@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import {Respond} from "../../utils/respond";
-import Trip from "../../database/models/trip";
+import {Trip} from "../../database/models/trip";
 
 export default class TripMiddleWare {
     //nhatdn

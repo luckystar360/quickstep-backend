@@ -1,38 +1,42 @@
 import { Request, Response, NextFunction } from "express";
 import Account from "../../database/models/account";
 import { verifyToken } from "../../utils/helpers";
-import {Respond} from "../../utils/respond";
+import { Respond } from "../../utils/respond";
 
 export default class AuthMiddleWare {
   //nhatdn
   static async isPhoneIdExist(req: Request, res: Response, next: NextFunction) {
     const respond = new Respond(res);
     try {
-      const { phoneId } = req.body; 
-      const existPhoneId = await Account.findOne({ phoneId }); 
+      const { phoneId } = req.body;
+      const existPhoneId = await Account.findOne({ phoneId });
       if (existPhoneId) {
         return respond.success(409, {
           message: "PhoneId already exists",
           data: undefined,
         });
-      } 
+      }
       next();
     } catch (error) {
       return respond.error(error);
     }
   }
 
-  static async isPhoneIdNotExist(req: Request, res: Response, next: NextFunction) {
+  static async isPhoneIdNotExist(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const respond = new Respond(res);
     try {
-      const { phoneId } = req.body; 
-      const existPhoneId = await Account.findOne({ phoneId }); 
+      const { phoneId } = req.body;
+      const existPhoneId = await Account.findOne({ phoneId });
       if (!existPhoneId) {
         return respond.success(404, {
           message: "PhoneId does not exist",
           data: undefined,
         });
-      } 
+      }
       next();
     } catch (error) {
       return respond.error(error);
@@ -42,16 +46,16 @@ export default class AuthMiddleWare {
 
   //check if the user already has account
   static async isEmailExist(req: Request, res: Response, next: NextFunction) {
-    const respond = new Respond(res); 
+    const respond = new Respond(res);
     try {
       const { email } = req.body;
-      const existEmail = await Account.findOne({ email }); 
+      const existEmail = await Account.findOne({ email });
       if (existEmail) {
         return respond.success(409, {
           message: "Account already exists",
           data: undefined,
         });
-      } 
+      }
       next();
     } catch (error) {
       return respond.error(error);
@@ -59,16 +63,37 @@ export default class AuthMiddleWare {
   }
 
   static async isUserNotExist(req: Request, res: Response, next: NextFunction) {
-    const respond = new Respond(res); 
+    const respond = new Respond(res);
     try {
       const { userId } = req.body;
-      const existUser = await Account.findById(userId); 
+      const existUser = await Account.findById(userId);
       if (existUser == null) {
         return respond.success(404, {
           message: "UserId do not exists",
           data: undefined,
         });
-      } 
+      }
+      next();
+    } catch (error) {
+      return respond.error(error);
+    }
+  }
+
+  static async isTrackerNotExist(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const respond = new Respond(res);
+    try {
+      const { userId } = req.body;
+      const existUser = await Account.findOne({ _id: userId, type: "tracker" });
+      if (existUser == null) {
+        return respond.success(404, {
+          message: "UserId do not exists",
+          data: undefined,
+        });
+      }
       next();
     } catch (error) {
       return respond.error(error);

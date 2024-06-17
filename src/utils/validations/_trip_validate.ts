@@ -34,5 +34,22 @@ export default class TripValidate {
         }
         next();
     }
+
+    static addMarker(req: Request, res: Response, next: NextFunction) {
+        const schema = Joi.object().keys({
+            userId: Joi.string().required().id(),
+            lat: Joi.string().required().min(0).max(15),
+            lon: Joi.string().required().min(0).max(15),
+            name: Joi.string().min(0).max(50)
+        });
+        const { error } = schema.validate(req.body);
+        if (error) {
+            return new Respond(res).success(400, {
+                message: error.details[0].message.replace(/"/g, ""),
+                data: undefined,
+            });
+        }
+        next();
+    }
     //end nhatdn
 }
