@@ -101,6 +101,25 @@ export default class TripController {
     }
   };
 
+  static editMarker = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { id, lat, lon, name, enable } = req.body;
+      let marker = await Marker.findById(id);
+      if (!marker) throw new Error("Marker not found");
+      const location = { ...marker.location, lat: lat, lon: lon };
+      marker = { ...marker.toObject(), ...({ location, name, enable } as any) };
+
+      return respond.success(201, {
+        message: "add marker successfully!",
+        data: marker,
+      });
+    } catch (error: any) {
+      console.log(error);
+      return respond.error(error);
+    }
+  };
+
   static getMarker = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {

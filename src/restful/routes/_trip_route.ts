@@ -37,6 +37,13 @@ tripRoutes.post(
   TripController.addMarker
 );
 
+tripRoutes.post(
+  "/edit-marker",
+  TripValidate.editMarker,
+  AuthMiddleWare.isTrackerNotExist, 
+  TripController.editMarker
+);
+
 tripRoutes.get(
   "/get-markers/:userId",
   // AuthMiddleWare.isLoggedIn,
