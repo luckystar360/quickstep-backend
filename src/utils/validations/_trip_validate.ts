@@ -40,7 +40,8 @@ export default class TripValidate {
             userId: Joi.string().required().id(),
             lat: Joi.string().required().min(0).max(15),
             lon: Joi.string().required().min(0).max(15),
-            name: Joi.string().min(0).max(50)
+            name: Joi.string().min(0).max(50),
+            enable: Joi.boolean(),
         });
         const { error } = schema.validate(req.body);
         if (error) {

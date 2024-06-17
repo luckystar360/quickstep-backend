@@ -29,6 +29,11 @@ const markerSchema = new mongoose.Schema({
     type: String,
     default: "marker",
   },
+  enable:{
+    type: Boolean,
+    required: true,
+    default: true,
+  },
   createdAt: {
     type: Date,
     default: () => Date.now(),
