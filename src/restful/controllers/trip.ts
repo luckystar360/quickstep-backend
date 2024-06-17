@@ -104,8 +104,8 @@ export default class TripController {
   static editMarker = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const { id, lat, lon, name, enable } = req.body;
-      let marker = await Marker.findById(id);
+      const { markerId, lat, lon, name, enable } = req.body;
+      let marker = await Marker.findById(markerId);
       if (!marker) throw new Error("Marker not found");
       const location = { ...marker.location, lat: lat, lon: lon };
       marker = { ...marker.toObject(), ...({ location, name, enable } as any) };

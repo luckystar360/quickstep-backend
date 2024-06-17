@@ -40,7 +40,7 @@ tripRoutes.post(
 tripRoutes.post(
   "/edit-marker",
   TripValidate.editMarker,
-  AuthMiddleWare.isTrackerNotExist, 
+  TripMiddleWare.isMarkerNotExist, 
   TripController.editMarker
 );
 
