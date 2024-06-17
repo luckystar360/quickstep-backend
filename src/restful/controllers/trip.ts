@@ -108,10 +108,10 @@ export default class TripController {
       let marker = await Marker.findById(markerId);
       if (!marker) throw new Error("Marker not found");
       const location = { ...marker.location, lat: lat, lon: lon };
-      marker = { ...marker.toObject(), ...({ location, name, enable } as any) };
+      marker = { ...marker.toObject(), ...({ location, name, enable } as any).toObject() };
 
       return respond.success(201, {
-        message: "add marker successfully!",
+        message: "edit marker successfully!",
         data: marker,
       });
     } catch (error: any) {
