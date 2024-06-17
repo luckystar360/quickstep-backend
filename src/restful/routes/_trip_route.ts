@@ -11,8 +11,8 @@ const tripRoutes = express.Router();
 // nhatdn 
 tripRoutes.post(
   "/create-trip",
-  AuthMiddleWare.isUserNotExist,
   TripValidate.createTrip,
+  AuthMiddleWare.isUserNotExist, 
   TripController.createTrip
 );
 
@@ -25,15 +25,15 @@ tripRoutes.get(
 
 tripRoutes.post(
   "/add-location",
-  TripMiddleWare.isTripNotExist,
   TripValidate.addLocation,
+  TripMiddleWare.isTripNotExist, 
   TripController.addLocation
 );
 
 tripRoutes.post(
   "/add-marker",
-  AuthMiddleWare.isTrackerNotExist,
   TripValidate.addMarker,
+  AuthMiddleWare.isTrackerNotExist, 
   TripController.addMarker
 );
 
