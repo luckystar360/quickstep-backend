@@ -90,7 +90,13 @@ export default class TripController {
       const tracker = await Account.findOne({ _id: userId, type: "tracker" });
       if (!tracker) throw new Error("Tracker not found");
       const location = { lat: lat, lon: lon };
-      const marker = await Marker.create({ userId, name, location, enable, img });
+      const marker = await Marker.create({
+        userId,
+        name,
+        location,
+        enable,
+        img,
+      });
       return respond.success(201, {
         message: "add marker successfully!",
         data: marker,
@@ -139,6 +145,27 @@ export default class TripController {
         count: markers.length,
       });
     } catch (error) {
+      return respond.error(error);
+    }
+  };
+
+  static deleteMarker = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { markerId } = req.body;
+      let marker = await Marker.findById(markerId);
+      if (!marker) throw new Error("Marker not found");
+
+      const deleteMarker = await Marker.findByIdAndDelete(markerId);
+      if (!deleteMarker) {
+        return res.status(403).json({
+          message: "You're not allowed to delete this marker",
+        });
+      }
+
+      return res.status(200).json({ message: "Marker deleted successfully" });
+    } catch (error: any) {
+      console.log(error);
       return respond.error(error);
     }
   };

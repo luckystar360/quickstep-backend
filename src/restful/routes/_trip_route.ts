@@ -51,4 +51,11 @@ tripRoutes.get(
   TripController.getMarker
 );
 
+tripRoutes.delete(
+  "/delete-marker",
+  TripValidate.deleteMarker,
+  TripMiddleWare.isMarkerNotExist, 
+  TripController.deleteMarker
+);
+
 export default tripRoutes;

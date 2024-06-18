@@ -72,5 +72,19 @@ export default class TripValidate {
     }
     next();
   }
+
+  static deleteMarker(req: Request, res: Response, next: NextFunction) {
+    const schema = Joi.object().keys({
+      markerId: Joi.string().required().id(),
+    });
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return new Respond(res).success(400, {
+        message: error.details[0].message.replace(/"/g, ""),
+        data: undefined,
+      });
+    }
+    next();
+  }
   //end nhatdn
 }
