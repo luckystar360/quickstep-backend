@@ -29,7 +29,10 @@ const markerSchema = new mongoose.Schema({
     type: String,
     default: "marker",
   },
-  enable:{
+  img: {
+    type: String,
+  },
+  enable: {
     type: Boolean,
     required: true,
     default: true,

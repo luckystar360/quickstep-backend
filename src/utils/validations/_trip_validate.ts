@@ -42,6 +42,7 @@ export default class TripValidate {
       lon: Joi.string().required().min(0).max(15),
       name: Joi.string().min(0).max(50),
       enable: Joi.boolean(),
+      img: Joi.string()
     });
     const { error } = schema.validate(req.body);
     if (error) {
@@ -60,6 +61,7 @@ export default class TripValidate {
       lon: Joi.string().min(0).max(15),
       name: Joi.string().min(0).max(50),
       enable: Joi.boolean(),
+      img: Joi.string()
     });
     const { error } = schema.validate(req.body);
     if (error) {

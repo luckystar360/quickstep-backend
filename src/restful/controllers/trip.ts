@@ -86,11 +86,11 @@ export default class TripController {
   static addMarker = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const { userId, lat, lon, name, enable } = req.body;
+      const { userId, lat, lon, name, enable, img } = req.body;
       const tracker = await Account.findOne({ _id: userId, type: "tracker" });
       if (!tracker) throw new Error("Tracker not found");
       const location = { lat: lat, lon: lon };
-      const marker = await Marker.create({ userId, name, location, enable });
+      const marker = await Marker.create({ userId, name, location, enable, img });
       return respond.success(201, {
         message: "add marker successfully!",
         data: marker,
@@ -104,13 +104,14 @@ export default class TripController {
   static editMarker = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const { markerId, lat, lon, name, enable } = req.body;
+      const { markerId, lat, lon, name, enable, img } = req.body;
       let marker = await Marker.findById(markerId);
       if (!marker) throw new Error("Marker not found");
       if (lat != null) marker.location.lat = lat;
       if (lon != null) marker.location.lon = lon;
       if (name != null) marker.name = name;
       if (enable != null) marker.enable = enable;
+      if (img != null) marker.img = img;
 
       marker.updatedAt = new Date();
 
