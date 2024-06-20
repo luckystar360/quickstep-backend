@@ -1,10 +1,13 @@
+import Account from "../../database/models/account";
 import Notification from "../../database/models/notification";
 import { Request, Response } from "express";
 
 //Sending SOS
 export const sendSOS = async (req: Request, res: Response) => {
   try {
-    const { toUserIds } = req.body;
+    const { toUserIds, fromId } = req.body;
+    let trackee = await Account.findById(fromId);
+    if (!trackee) throw new Error("TrackeeId not found");
     res.locals.io.to(toUserIds).emit("sosFromTrackee");
     return res.status(200).json({ message: "SOS has been sent successfully" });
   } catch (error: any) {
