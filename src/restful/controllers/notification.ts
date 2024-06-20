@@ -8,7 +8,7 @@ export const sendSOS = async (req: Request, res: Response) => {
     const { toUserIds, fromId } = req.body;
     let trackee = await Account.findById(fromId);
     if (!trackee) throw new Error("TrackeeId not found");
-    res.locals.io.to(toUserIds).emit("sosFromTrackee");
+    res.locals.io.to(toUserIds).emit("sosFromTrackee", fromId);
     return res.status(200).json({ message: "SOS has been sent successfully" });
   } catch (error: any) {
     return res.status(500).json({
