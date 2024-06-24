@@ -81,7 +81,7 @@ io.on("connection", (socket: Socket) => {
       existUser.status = "offline";
       existUser.updatedAt = new Date();
       await Account.findByIdAndUpdate(undefined, existUser);
-      io.to(broadcastIds).emit("userStatusChange", existUser);
+      io.to(broadcastIds).emit("userStatusChanged", existUser);
       console.log(`userId: ${userId} disconneted`);
     });
 
