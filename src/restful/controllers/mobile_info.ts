@@ -38,7 +38,7 @@ export default class MobileInfoController {
       }
       const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
 
-      res.locals.io.to(...trackerIds).emit("devideInfoUpdated", mobileInfo);
+      res.locals.io.to(trackerIds).emit("devideInfoUpdated", mobileInfo);
 
       return respond.success(200, {
         message: "Update device info successfully!",
