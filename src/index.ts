@@ -51,7 +51,7 @@ io.on("connection", (socket: Socket) => {
       // notify user status
       existUser.status = "online";
       existUser.updatedAt = new Date();
-      await Account.findByIdAndUpdate(undefined, existUser);
+      await Account.findByIdAndUpdate(userId, existUser);
       io.to(broadcastIds).emit("userStatusChanged", existUser);
 
       // // create MobileInfo if dont exist
