@@ -38,53 +38,55 @@ io.on("connection", (socket: Socket) => {
   socket.on("joinGroup", async (data) => {
     const userId = data.userId;
     if (userId == null) return;
-    const existUser = await Account.findById(userId);
-    if (existUser == null) return;
-    const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
-    const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
-    const broadcastIds = [...trackerIds, ...trackeeIds] as string[];
+    try {
+      const existUser = await Account.findById(userId);
+      if (existUser == null) return;
+      const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
+      const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
+      const broadcastIds = [...trackerIds, ...trackeeIds] as string[];
 
-    socket.join(userId);
-    socket.emit("joinedGroup", "You're joined to the UserGroup");
+      socket.join(userId);
+      socket.emit("joinedGroup", "You're joined to the UserGroup");
 
-    // notify user status
-    existUser.status = "online";
-    existUser.updatedAt = new Date();
-    await Account.findByIdAndUpdate(undefined, existUser);
-    io.to(broadcastIds).emit("userStatusChanged", existUser);
-
-    // // create MobileInfo if dont exist
-    // let existMobileInfo = await MobileInfo.findOne({ userId: userId });
-    // if (existMobileInfo == null) {
-    //   existMobileInfo = await MobileInfo.create({
-    //     userId,
-    //     status: "online",
-    //     lastOnline: Date.now(),
-    //   });
-    // } else {
-    //   existMobileInfo.status = "online";
-    //   existMobileInfo.lastOnline = new Date();
-    //   existMobileInfo.updatedAt = new Date();
-    //   await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
-    // }
-
-    // const existUser = await Account.findById(userId);
-    // let broadcastIds: string[] = [];
-    // if (existUser != null) {
-    //   const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
-    //   const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
-    //   broadcastIds = [...trackerIds, ...trackeeIds] as string[];
-    //   io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
-    // }
-
-    socket.on("disconnect", async () => {
-      existUser.status = "offline";
+      // notify user status
+      existUser.status = "online";
       existUser.updatedAt = new Date();
       await Account.findByIdAndUpdate(undefined, existUser);
       io.to(broadcastIds).emit("userStatusChanged", existUser);
-      console.log(`userId: ${userId} disconneted`);
-    });
 
+      // // create MobileInfo if dont exist
+      // let existMobileInfo = await MobileInfo.findOne({ userId: userId });
+      // if (existMobileInfo == null) {
+      //   existMobileInfo = await MobileInfo.create({
+      //     userId,
+      //     status: "online",
+      //     lastOnline: Date.now(),
+      //   });
+      // } else {
+      //   existMobileInfo.status = "online";
+      //   existMobileInfo.lastOnline = new Date();
+      //   existMobileInfo.updatedAt = new Date();
+      //   await MobileInfo.findByIdAndUpdate(existMobileInfo.id, existMobileInfo);
+      // }
+
+      // const existUser = await Account.findById(userId);
+      // let broadcastIds: string[] = [];
+      // if (existUser != null) {
+      //   const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
+      //   const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
+      //   broadcastIds = [...trackerIds, ...trackeeIds] as string[];
+      //   io.to(broadcastIds).emit("mobileInfoUpdate", existMobileInfo);
+      // }
+
+      socket.on("disconnect", async () => {
+        existUser.status = "offline";
+        existUser.updatedAt = new Date();
+        await Account.findByIdAndUpdate(undefined, existUser);
+        io.to(broadcastIds).emit("userStatusChanged", existUser);
+        console.log(`userId: ${userId} disconneted`);
+      });
+    }
+    catch (e) { }
     // signaling
     socket.on("makeCall", (data) => {
       let calleeId = data.calleeId;
