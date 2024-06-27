@@ -33,12 +33,14 @@ export default class MobileInfoController {
         mobileInfo = await MobileInfo.create({ ...req.body });
       } else {
         mobileInfo.updatedAt = new Date();
-        mobileInfo = {...mobileInfo.toObject(), ...req.body};
+        mobileInfo = { ...mobileInfo.toObject(), ...req.body };
         await MobileInfo.findByIdAndUpdate(mobileInfo?.id, mobileInfo!);
       }
       const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
 
-      res.locals.io.to(trackerIds).emit("devideInfoUpdated", mobileInfo);
+      res.locals.io
+        .to(trackerIds)
+        .emit("devideInfoUpdated", { ...mobileInfo, userId: existUser.id });
 
       return respond.success(200, {
         message: "Update device info successfully!",
