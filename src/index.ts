@@ -39,7 +39,7 @@ io.on("connection", (socket: Socket) => {
     const userId = data.userId;
     if (userId == null) return;
     try {
-      const existUser = await Account.findById(userId);
+      let existUser = await Account.findById(userId);
       if (existUser == null) return;
       const trackerIds = existUser.trackerIdList?.map((item) => item.id) ?? [];
       const trackeeIds = existUser.trackeeIdList?.map((item) => item.id) ?? [];
@@ -79,6 +79,8 @@ io.on("connection", (socket: Socket) => {
       // }
 
       socket.on("disconnect", async () => {
+        existUser = await Account.findById(userId);
+        if(existUser == null) return;
         existUser.status = "offline";
         existUser.updatedAt = new Date();
         await Account.findByIdAndUpdate(userId, existUser);
