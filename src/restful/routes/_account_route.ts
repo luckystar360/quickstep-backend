@@ -38,7 +38,13 @@ accountRoutes.post(
   "/edit-trackee-nickName",
   UserController.editTrackeeInfo
 );
-
+accountRoutes.post(
+  "/upload-avatar",
+  // AuthMiddleWare.isLoggedIn,
+  upload.single("img"),
+  uploadPhoto,
+  UserController.uploadAvatar
+);
 //nhatdn end
 
 accountRoutes.get(
@@ -53,13 +59,7 @@ accountRoutes.post(
   AuthMiddleWare.isEmailExist,
   UserController.createAccount
 );
-accountRoutes.post(
-  "/upload-avatar",
-  AuthMiddleWare.isLoggedIn,
-  upload.single("img"),
-  uploadPhoto,
-  UserController.uploadAvatar
-);
+
 
 // accountRoutes.post("/login", AuthValidate.login, UserController.login);
 
