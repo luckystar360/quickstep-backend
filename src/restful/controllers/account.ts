@@ -233,6 +233,7 @@ export default class UserController {
 
       const imgUrl = res.locals.avatarImageUrl;
       user.avatarUrl = imgUrl;
+      user.updatedAt = new Date();
       const result = await Account.findByIdAndUpdate(userId, user);
       if (result != null)
         return respond.success(200, {
