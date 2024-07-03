@@ -4,7 +4,7 @@ import Profile from "../../database/models/profile";
 import OTPService from "../../services/otp";
 import { sendEmail } from "../../services/send_mail";
 import { comparePwd, generateToken, hashPwd } from "../../utils/helpers";
-import {Respond} from "../../utils/respond";
+import { Respond } from "../../utils/respond";
 import { MessageRoom } from "../../database/models/message";
 
 export default class UserController {
@@ -30,7 +30,11 @@ export default class UserController {
   static createUser = async (req: Request, res: Response) => {
     const respond = new Respond(res);
     try {
-      const account = await Account.create({ ...req.body, createdAt: Date.now(), updatedAt: Date.now() });
+      const account = await Account.create({
+        ...req.body,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
       return respond.success(201, {
         message: "Account created successfully!",
         data: account,
@@ -119,9 +123,9 @@ export default class UserController {
         //neu chua ton tai roomChat cua trackee thi tao moi
         await MessageRoom.create({
           name: `group_${trackeeId}`,
-          usersId: [trackeeId, tracker.id], 
-          createdAt: Date.now(), 
-          updatedAt: Date.now()
+          usersId: [trackeeId, tracker.id],
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
         });
       } else if (existRooms.length > 0) {
         console.log("already exist room");
@@ -212,6 +216,39 @@ export default class UserController {
       return respond.error(error);
     }
   };
+
+  static uploadAvatar = async (req: Request, res: Response) => {
+    const respond = new Respond(res);
+    try {
+      const { userId } = req.body;
+      const user = await Account.findOne({
+        _id: userId,
+      });
+
+      if (user == null)
+        return respond.success(404, {
+          message: "UserId does not exist",
+          data: userId,
+        });
+
+      const imgUrl = res.locals.avatarImageUrl;
+      user.avatarUrl = imgUrl;
+      const result = await Account.findByIdAndUpdate(userId, user);
+      if (result != null)
+        return respond.success(200, {
+          message: "Avatar have been updated",
+          data: user,
+        });
+      else
+        return respond.success(409, {
+          message: "Avatar can not been updated",
+          data: user,
+        });
+    } catch (error) {
+      return respond.error(error);
+    }
+  };
+
   //end nhatdn
 
   // Getting all users
@@ -240,8 +277,8 @@ export default class UserController {
         ...req.body,
         password,
         role: "member",
-        createdAt: Date.now(), 
-        updatedAt: Date.now()
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
       });
       return respond.success(201, {
         message: "Account created successfully, verify email",

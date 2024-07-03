@@ -2,6 +2,8 @@ import express from "express";
 import AuthValidate from "../../utils/validations/_user_validate";
 import UserController from "../controllers/account";
 import AuthMiddleWare from "../middlewares/_auth_middleware";
+import { upload } from "../../utils/multer";
+import { uploadPhoto } from "../middlewares/_upload_photo";
 
 const accountRoutes = express.Router();
 
@@ -51,15 +53,22 @@ accountRoutes.post(
   AuthMiddleWare.isEmailExist,
   UserController.createAccount
 );
-
-accountRoutes.post("/login", AuthValidate.login, UserController.login);
-
 accountRoutes.post(
-  "/verify-account",
-  AuthValidate.otp,
-  UserController.verifyEmail
+  "/upload-avatar",
+  AuthMiddleWare.isLoggedIn,
+  upload.single("img"),
+  uploadPhoto,
+  UserController.uploadAvatar
 );
 
-accountRoutes.post("/resend-otp", AuthValidate.email, UserController.resendOTP);
+// accountRoutes.post("/login", AuthValidate.login, UserController.login);
+
+// accountRoutes.post(
+//   "/verify-account",
+//   AuthValidate.otp,
+//   UserController.verifyEmail
+// );
+
+// accountRoutes.post("/resend-otp", AuthValidate.email, UserController.resendOTP);
 
 export default accountRoutes;

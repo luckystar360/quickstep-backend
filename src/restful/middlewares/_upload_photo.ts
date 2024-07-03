@@ -22,7 +22,7 @@ export const uploadPhoto = async (
 
     const imgUrl = await getImageUrl(req.file.filename);
 
-    res.locals.profileImageUrl = imgUrl;
+    res.locals.avatarImageUrl = imgUrl;
     next();
   } catch (error) {
     return respond.error(error);

@@ -9,6 +9,7 @@ const accountSchema = new mongoose.Schema({
     unique: true,
   },
   fullName: { type: String },
+  avatarUrl: {type: String},
   phoneId: { type: String, unique: true },
   email: { type: String },
   password: { type: String },
@@ -49,13 +50,13 @@ const accountSchema = new mongoose.Schema({
 });
 
 const Account = mongoose.model("Account", accountSchema);
-const changeStream = Account.watch();
+// const changeStream = Account.watch();
 
-changeStream.on("change", async (change) => {
-  if (change.operationType === "insert") {
-    //Creata an OTP document in database
-    await OTPService.generateOTP(change.fullDocument.email);
-  }
-});
+// changeStream.on("change", async (change) => {
+//   if (change.operationType === "insert") {
+//     //Creata an OTP document in database
+//     await OTPService.generateOTP(change.fullDocument.email);
+//   }
+// });
 
 export default Account;
