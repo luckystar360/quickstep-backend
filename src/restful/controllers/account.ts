@@ -237,7 +237,7 @@ export default class UserController {
       const result = await Account.findByIdAndUpdate(userId, user);
       if (result != null)
         return respond.success(200, {
-          message: "Avatar have been updated",
+          message: "Avatar has been updated",
           data: user,
         });
       else
